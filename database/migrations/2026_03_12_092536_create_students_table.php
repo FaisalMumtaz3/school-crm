@@ -17,6 +17,8 @@ return new class extends Migration
             $table->string('father_name');
             $table->string('phone')->nullable();
             $table->string('class');
+            $table->string('section')->nullable();
+            $table->integer('roll_number')->nullable();
             $table->date('admission_date')->nullable();
             $table->timestamps();
         });

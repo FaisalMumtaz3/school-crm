@@ -2,16 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use App\DataTables\StudentDataTable;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 class StudentController extends Controller
 {
-    public function index()
+    public function index(StudentDataTable $table)
     {
-        $students = Student::latest()->paginate(10);
-        return view('students.index', compact('students'));
+        $tableData = $table->viewData();
+
+        // AJAX requests replace only the table, keeping the page shell in place.
+        if (request()->ajax()) {
+            return view('students.partials.StudentDataTable', $tableData);
+        }
+
+        return view('students.index', $tableData);
     }
 
     public function create()
@@ -21,11 +28,15 @@ class StudentController extends Controller
 
     public function store(Request $request)
     {
+        $this->normalizePhone($request);
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'father_name' => 'required|string|max:255',
-            'phone' => 'nullable|string|max:20',
+            'phone' => ['nullable', 'regex:/^\+92[0-9]{10}$/'],
             'class' => 'required|string|max:50',
+            'section' => 'nullable|string|max:10',
+            'roll_number' => 'nullable|integer|min:1',
             'admission_date' => 'nullable|date'
         ]);
 
@@ -47,11 +58,15 @@ class StudentController extends Controller
 
     public function update(Request $request, Student $student)
     {
+        $this->normalizePhone($request);
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'father_name' => 'required|string|max:255',
-            'phone' => 'nullable|string|max:20',
+            'phone' => ['nullable', 'regex:/^\+92[0-9]{10}$/'],
             'class' => 'required|string|max:50',
+            'section' => 'nullable|string|max:10',
+            'roll_number' => 'nullable|integer|min:1',
             'admission_date' => 'nullable|date'
         ]);
 
@@ -67,5 +82,25 @@ class StudentController extends Controller
 
         return redirect()->route('students.index')
             ->with('success','Student deleted successfully');
+    }
+
+    private function normalizePhone(Request $request): void
+    {
+        $phone = preg_replace('/[^0-9]/', '', (string) $request->input('phone'));
+
+        if ($phone === '') {
+            $request->merge(['phone' => null]);
+            return;
+        }
+
+        if (str_starts_with($phone, '92')) {
+            $phone = substr($phone, 2);
+        }
+
+        if (str_starts_with($phone, '0')) {
+            $phone = substr($phone, 1);
+        }
+
+        $request->merge(['phone' => '+92' . $phone]);
     }
 }

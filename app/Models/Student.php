@@ -14,6 +14,8 @@ class Student extends Model
         'father_name',
         'phone',
         'class',
+        'section',
+        'roll_number',
         'admission_date'
     ];
 }
