@@ -8,7 +8,7 @@ window.Alpine = Alpine;
 Alpine.start();
 
 document.addEventListener('submit', function (event) {
-	const form = event.target.closest('.delete-student-form');
+	const form = event.target.closest('.delete-student-form, .delete-teacher-form');
 
 	if (!form || form.dataset.confirmed === 'true') {
 		return;

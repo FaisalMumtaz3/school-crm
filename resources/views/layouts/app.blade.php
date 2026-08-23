@@ -7,40 +7,49 @@
     <title>School CRM</title>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-
     <style>
+        /* =========================
+        GLOBAL
+        ========================= */
         * {
             box-sizing: border-box;
         }
 
-        html,
-        body {
+        html {
+            width: 100%;
+            height: 100%;
             margin: 0;
             padding: 0;
-            width: 100%;
-            min-height: 100%;
-            font-family: Arial, Helvetica, sans-serif;
         }
 
         body {
+            width: 100%;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+
+            font-family: Arial, Helvetica, sans-serif;
+
             background: #f8fafc;
             color: #111827;
         }
 
-        /* =========================
-           APP WRAPPER
-        ========================= */
-        .school-app {
-            min-height: 100vh;
-            width: 100%;
-            position: relative;
-        }
 
         /* =========================
-           SIDEBAR
+        APP WRAPPER
+        ========================= */
+        .school-app {
+            width: 100%;
+            min-height: 100vh;
+        }
+
+
+        /* =========================
+        SIDEBAR
         ========================= */
         .school-sidebar {
             position: fixed;
+
             top: 0;
             left: 0;
             bottom: 0;
@@ -49,7 +58,7 @@
             height: 100vh;
 
             background: #030817;
-            color: white;
+            color: #ffffff;
 
             display: flex;
             flex-direction: column;
@@ -59,6 +68,10 @@
             overflow: hidden;
         }
 
+
+        /* =========================
+        SIDEBAR BRAND
+        ========================= */
         .sidebar-brand {
             height: 64px;
             min-height: 64px;
@@ -68,12 +81,13 @@
 
             padding: 0 16px;
 
-            border-bottom: 1px solid rgba(255,255,255,.05);
+            border-bottom: 1px solid rgba(255, 255, 255, .05);
         }
 
         .brand-icon {
             width: 38px;
             height: 38px;
+            min-width: 38px;
 
             border-radius: 10px;
 
@@ -99,12 +113,14 @@
 
         .brand-subtitle {
             margin-top: 2px;
+
             font-size: 10px;
             color: #94a3b8;
         }
 
+
         /* =========================
-           SIDEBAR NAV
+        SIDEBAR NAV
         ========================= */
         .sidebar-nav {
             flex: 1;
@@ -167,15 +183,15 @@
         }
 
         .nav-item:hover {
-            background: rgba(255,255,255,.06);
-            color: #fff;
+            background: rgba(255, 255, 255, .06);
+            color: #ffffff;
         }
 
         .nav-item.active {
             background: #5146e5;
-            color: #fff;
+            color: #ffffff;
 
-            box-shadow: 0 8px 18px rgba(79,70,229,.25);
+            box-shadow: 0 8px 18px rgba(79, 70, 229, .25);
         }
 
         .nav-icon {
@@ -191,14 +207,14 @@
             font-size: 15px;
         }
 
+
         /* =========================
-           SIDEBAR USER
+        SIDEBAR USER
         ========================= */
         .sidebar-user {
             min-height: 74px;
 
             margin: 0 9px 9px;
-
             padding: 10px;
 
             border-radius: 10px;
@@ -234,14 +250,17 @@
         }
 
         .user-name {
-            color: white;
+            color: #ffffff;
+
             font-size: 12px;
             font-weight: 700;
         }
 
         .user-role {
             margin-top: 2px;
+
             color: #8491ab;
+
             font-size: 10px;
         }
 
@@ -250,32 +269,32 @@
             font-size: 16px;
         }
 
+
         /* =========================
-           MAIN AREA
+        MAIN AREA
         ========================= */
         .school-main {
             margin-left: 254px;
 
-            height: 100vh;
-            min-height: 100vh;
-
             width: calc(100% - 254px);
+
+            min-height: 100vh;
 
             display: flex;
             flex-direction: column;
         }
 
+
         /* =========================
-           TOP HEADER
+        HEADER
         ========================= */
         .school-header {
             position: sticky;
             top: 0;
 
+            width: 100%;
             height: 64px;
             min-height: 64px;
-
-            width: 100%;
 
             background: #ffffff;
 
@@ -293,6 +312,7 @@
         .header-right {
             display: flex;
             align-items: center;
+
             gap: 18px;
         }
 
@@ -319,12 +339,14 @@
             height: 5px;
 
             background: #5146e5;
+
             border-radius: 50%;
         }
 
         .header-user {
             display: flex;
             align-items: center;
+
             gap: 10px;
         }
 
@@ -336,11 +358,13 @@
         .header-user-name {
             font-size: 13px;
             font-weight: 700;
+
             color: #1e293b;
         }
 
         .header-user-role {
             margin-top: 3px;
+
             font-size: 10px;
             color: #64748b;
         }
@@ -362,27 +386,33 @@
             font-weight: 700;
         }
 
+
         /* =========================
-           CONTENT
+        CONTENT
         ========================= */
         .school-content {
             flex: 1 1 auto;
 
-            height: calc(100vh - 106px);
-            min-height: 0;
-
             width: 100%;
 
-            display: flex;
-            flex-direction: column;
+            min-height: 0;
 
-            padding: 28px 24px 70px;
+            padding: 28px 24px 28px;
 
             overflow-x: hidden;
             overflow-y: auto;
         }
 
+        .school-content > * {
+            width: 100%;
+        }
+
+
+        /* =========================
+        PAGE
+        ========================= */
         .student-form-page {
+            width: 100%;
             min-height: 100%;
         }
 
@@ -390,14 +420,15 @@
             min-height: 36rem;
         }
 
+
         /* =========================
-           FOOTER
+        FOOTER
         ========================= */
         .school-footer {
+            width: 100%;
+
             height: 42px;
             min-height: 42px;
-
-            width: 100%;
 
             border-top: 1px solid #e5e7eb;
 
@@ -410,11 +441,13 @@
             padding: 0 24px;
 
             color: #64748b;
+
             font-size: 10px;
         }
 
+
         /* =========================
-           MOBILE
+        TABLET
         ========================= */
         @media (max-width: 900px) {
 
@@ -424,14 +457,19 @@
 
             .school-main {
                 margin-left: 220px;
+
                 width: calc(100% - 220px);
             }
 
             .school-content {
-                padding: 22px 18px 60px;
+                padding: 22px 18px 28px;
             }
         }
 
+
+        /* =========================
+        MOBILE
+        ========================= */
         @media (max-width: 700px) {
 
             .school-sidebar {
@@ -475,16 +513,18 @@
 
             .school-main {
                 margin-left: 70px;
+
                 width: calc(100% - 70px);
-                height: auto;
+
                 min-height: 100vh;
             }
 
             .school-content {
-                height: auto;
-                min-height: calc(100vh - 106px);
-                overflow-y: visible;
-                padding-bottom: 60px;
+                min-height: 0;
+
+                padding: 18px 14px 24px;
+
+                overflow-y: auto;
             }
 
             .student-form-page {
@@ -509,6 +549,10 @@
             }
 
             .school-header {
+                padding: 0 14px;
+            }
+
+            .school-footer {
                 padding: 0 14px;
             }
         }
@@ -573,7 +617,7 @@
                     <span>Students</span>
                 </a>
 
-                <a href="#" class="nav-item">
+                <a href="{{ route('teachers.index') }}" class="nav-item {{ request()->routeIs('teachers.*') ? 'active' : '' }}">
                     <span class="nav-icon">♧</span>
                     <span>Teachers</span>
                 </a>
