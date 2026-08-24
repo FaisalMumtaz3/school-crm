@@ -1,9 +1,41 @@
 <section id="student-datatable" class="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
     <div class="flex shrink-0 flex-col gap-4 border-b border-gray-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
         <div>
-            <h3 class="font-semibold text-gray-900">All students</h3>
-            <p class="mt-1 text-sm text-gray-500">{{ $students->total() }} {{ Str::plural('record', $students->total()) }} in your directory</p>
-        </div>
+    <h3 class="font-semibold text-gray-900">
+        All students
+    </h3>
+
+    <p class="mt-1 text-sm text-gray-500">
+        {{ $students->total() }}
+        {{ Str::plural('record', $students->total()) }}
+        in your directory
+    </p>
+    </div>
+
+    <a
+        href="{{ route('students.export', [
+            'search' => request('search'),
+            'class' => request('class'),
+            'section' => request('section'),
+        ]) }}"
+        class="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700"
+    >
+        <svg
+            class="h-4 w-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+        >
+            <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14"
+            />
+        </svg>
+
+        Export Excel
+    </a>
         <form method="GET" action="{{ route('students.index') }}" data-student-filter-form class="grid gap-3 sm:grid-cols-2 lg:flex lg:items-center">
             <label class="relative block lg:w-64"><span class="sr-only">Search students</span><input type="search" name="search" value="{{ $filters['search'] ?? '' }}" placeholder="Search students..." autocomplete="off" class="w-full rounded-xl border-gray-300 py-2.5 pl-3 pr-10 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"><button type="submit" aria-label="Search students" class="absolute right-1.5 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-lg text-indigo-600 transition hover:bg-indigo-50"><svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-4.35-4.35m2.1-5.4a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z" /></svg></button></label>
             <label><span class="sr-only">Filter by class</span><select name="class" class="w-full rounded-xl border-gray-300 py-2.5 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500 lg:w-36"><option value="">All classes</option>@foreach ($classes as $class)<option value="{{ $class }}" @selected(($filters['class'] ?? '') === $class)>Class {{ $class }}</option>@endforeach</select></label>
