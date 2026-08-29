@@ -5,6 +5,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\ExportController;
+use App\Http\Controllers\ClassController;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/login');
@@ -18,12 +19,14 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('/students/export', [ExportController::class, 'students'])->name('students.export');
+    Route::get('/teachers/export', [ExportController::class, 'teachers'])->name('teachers.export');
 
     Route::resource('students', StudentController::class);
     Route::resource('teachers', TeacherController::class);
-    Route::resource('classes', StudentController::class);
-    Route::resource('attendance', StudentController::class);
-    Route::resource('fees', StudentController::class);
+    // Route::resource('attendance', StudentController::class);
+    // Route::resource('fees', StudentController::class);
+    Route::resource('classes', ClassController::class)->parameters([
+        'classes' => 'schoolClass']);
 });
 
 require __DIR__.'/auth.php';

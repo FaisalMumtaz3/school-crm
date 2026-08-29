@@ -1,45 +1,183 @@
 <section id="teacher-datatable"
     class="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
-    <div
-        class="flex shrink-0 flex-col gap-4 border-b border-gray-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-        <div>
-            <h3 class="font-semibold text-gray-900">All teachers</h3>
-            <p class="mt-1 text-sm text-gray-500">{{ $teachers->total() }}
-                {{ Str::plural('record', $teachers->total()) }} in your directory</p>
-        </div>
-        <form method="GET" action="{{ route('teachers.index') }}" data-teacher-filter-form
-            class="grid gap-3 sm:grid-cols-2 lg:flex lg:items-center">
-            <label class="relative block lg:w-64"><span class="sr-only">Search teachers</span><input type="search"
-                    name="search" value="{{ $filters['search'] ?? '' }}" placeholder="Search teachers..."
-                    autocomplete="off"
-                    class="w-full rounded-xl border-gray-300 py-2.5 pl-3 pr-10 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"><button
-                    type="submit" aria-label="Search teachers"
-                    class="absolute right-1.5 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-lg text-indigo-600 hover:bg-indigo-50"><svg
-                        class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="m21 21-4.35-4.35m2.1-5.4a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z" />
-                    </svg></button></label>
-            <label><span class="sr-only">Filter by subject</span><select name="subject"
-                    class="w-full rounded-xl border-gray-300 py-2.5 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500 lg:w-36">
-                    <option value="">All subjects</option>
-                    @foreach ($subjects as $subject)
-                        <option value="{{ $subject }}" @selected(($filters['subject'] ?? '') === $subject)>{{ $subject }}</option>
-                    @endforeach
-                </select>
-            </label>
-            <label><span class="sr-only">Filter by qualification</span><select name="qualification"
-                    class="w-full rounded-xl border-gray-300 py-2.5 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500 lg:w-40">
-                    <option value="">All qualifications</option>
-                    @foreach ($qualifications as $qualification)
-                        <option value="{{ $qualification }}" @selected(($filters['qualification'] ?? '') === $qualification)>{{ $qualification }}</option>
-                    @endforeach
-                </select></label>
-            @if (collect($filters)->filter()->isNotEmpty())
-                <a href="{{ route('teachers.index') }}"
-                    class="inline-flex items-center justify-center rounded-xl border border-gray-300 px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50">Clear</a>
-            @endif
-        </form>
+    <div class="flex shrink-0 flex-col gap-4 border-b border-gray-100 px-5 py-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between">
+
+    {{-- =========================
+         LEFT: TITLE
+    ========================== --}}
+    <div class="shrink-0">
+        <h3 class="font-semibold text-gray-900">
+            All teachers
+        </h3>
+
+        <p class="mt-1 text-sm text-gray-500">
+            {{ $teachers->total() }}
+            {{ Str::plural('record', $teachers->total()) }}
+            in your directory
+        </p>
     </div>
+
+
+    {{-- =========================
+         RIGHT: EXPORT + FILTERS
+    ========================== --}}
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+
+        {{-- EXPORT BUTTON --}}
+        <a
+            href="{{ route('teachers.export', [
+                'search' => request('search'),
+                'subject' => request('subject'),
+                'qualification' => request('qualification'),
+            ]) }}"
+            class="inline-flex h-11 min-h-11 min-w-[140px] shrink-0 items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700"
+        >
+            <svg
+                class="h-4 w-4 shrink-0"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14"
+                />
+            </svg>
+
+            <span class="whitespace-nowrap">
+                Export Excel
+            </span>
+        </a>
+
+
+        {{-- =========================
+             FILTER FORM
+        ========================== --}}
+        <form
+            method="GET"
+            action="{{ route('teachers.index') }}"
+            data-teacher-filter-form
+            class="grid gap-3 sm:grid-cols-2 lg:flex lg:items-center"
+        >
+
+            {{-- SEARCH --}}
+            <label class="relative block lg:w-64">
+
+                <span class="sr-only">
+                    Search teachers
+                </span>
+
+                <input
+                    type="search"
+                    name="search"
+                    value="{{ $filters['search'] ?? '' }}"
+                    placeholder="Search teachers..."
+                    autocomplete="off"
+                    class="h-11 w-full rounded-xl border-gray-300 py-2.5 pl-3 pr-10 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                >
+
+                <button
+                    type="submit"
+                    aria-label="Search teachers"
+                    class="absolute right-1.5 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-lg text-indigo-600 transition hover:bg-indigo-50"
+                >
+                    <svg
+                        class="h-4 w-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="m21 21-4.35-4.35m2.1-5.4a7.5 7.5 0 1 1-15 0"
+                        />
+                    </svg>
+                </button>
+
+            </label>
+
+
+            {{-- SUBJECT --}}
+            <label>
+
+                <span class="sr-only">
+                    Filter by subject
+                </span>
+
+                <select
+                    name="subject"
+                    class="h-11 w-full rounded-xl border-gray-300 py-2.5 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500 lg:w-36"
+                >
+                    <option value="">
+                        All subjects
+                    </option>
+
+                    @foreach ($subjects as $subject)
+                        <option
+                            value="{{ $subject }}"
+                            @selected(($filters['subject'] ?? '') === $subject)
+                        >
+                            {{ $subject }}
+                        </option>
+                    @endforeach
+
+                </select>
+
+            </label>
+
+
+            {{-- QUALIFICATION --}}
+            <label>
+
+                <span class="sr-only">
+                    Filter by qualification
+                </span>
+
+                <select
+                    name="qualification"
+                    class="h-11 w-full rounded-xl border-gray-300 py-2.5 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500 lg:w-40"
+                >
+                    <option value="">
+                        All qualifications
+                    </option>
+
+                    @foreach ($qualifications as $qualification)
+                        <option
+                            value="{{ $qualification }}"
+                            @selected(($filters['qualification'] ?? '') === $qualification)
+                        >
+                            {{ $qualification }}
+                        </option>
+                    @endforeach
+
+                </select>
+
+            </label>
+
+
+            {{-- CLEAR --}}
+            @if (collect($filters)->filter()->isNotEmpty())
+
+                <a
+                    href="{{ route('teachers.index') }}"
+                    class="inline-flex h-11 min-h-11 items-center justify-center rounded-xl border border-gray-300 px-4 text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
+                >
+                    Clear
+                </a>
+
+            @endif
+
+        </form>
+
+    </div>
+
+</div>
     @if ($teachers->isEmpty())
         <div class="flex flex-1 items-center justify-center px-6 py-16 text-center">
             <div>

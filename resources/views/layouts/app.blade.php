@@ -631,7 +631,7 @@
                     Academics
                 </div>
 
-                <a href="#" class="nav-item">
+                <a href="{{ route('classes.index') }}" class="nav-item {{ request()->routeIs('classes.*') ? 'active' : '' }}">
                     <span class="nav-icon">▣</span>
                     <span>Classes</span>
                 </a>
