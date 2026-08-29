@@ -13,4 +13,8 @@ class SchoolClass extends Model
     protected $fillable = [
         'name',
     ];
+    public function sections(): HasMany
+    {
+        return $this->hasMany(Section::class, 'class_id');
+    }
 }

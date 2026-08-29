@@ -6,6 +6,7 @@ use App\Http\Controllers\StudentController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\ClassController;
+use App\Http\Controllers\SectionController;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/login');
@@ -27,6 +28,7 @@ Route::middleware('auth')->group(function () {
     // Route::resource('fees', StudentController::class);
     Route::resource('classes', ClassController::class)->parameters([
         'classes' => 'schoolClass']);
+    Route::resource('sections', SectionController::class);
 });
 
 require __DIR__.'/auth.php';

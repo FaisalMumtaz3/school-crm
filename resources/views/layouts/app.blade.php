@@ -636,7 +636,7 @@
                     <span>Classes</span>
                 </a>
 
-                <a href="#" class="nav-item">
+                <a href="{{ route('sections.index') }}" class="nav-item {{ request()->routeIs('sections.*') ? 'active' : '' }}">
                     <span class="nav-icon">▣</span>
                     <span>Sections</span>
                 </a>
