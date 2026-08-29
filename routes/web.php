@@ -22,6 +22,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/students/export', [ExportController::class, 'students'])->name('students.export');
     Route::get('/teachers/export', [ExportController::class, 'teachers'])->name('teachers.export');
 
+    Route::get('/classes/{schoolClass}/sections',[ClassController::class, 'sections'])
+        ->name('classes.sections');
+
     Route::resource('students', StudentController::class);
     Route::resource('teachers', TeacherController::class);
     // Route::resource('attendance', StudentController::class);
@@ -29,6 +32,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('classes', ClassController::class)->parameters([
         'classes' => 'schoolClass']);
     Route::resource('sections', SectionController::class);
+    
 });
 
 require __DIR__.'/auth.php';

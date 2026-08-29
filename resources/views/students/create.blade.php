@@ -60,14 +60,74 @@
 					@error('phone')<p class="mt-1.5 text-sm text-red-600">{{ $message }}</p>@enderror
 				</div>
 				<div>
-					<label for="class" class="mb-2 block text-sm font-semibold text-gray-700">Class <span class="text-red-500">*</span></label>
-					<input id="class" type="text" name="class" value="{{ old('class') }}" required placeholder="e.g. 5" class="block w-full rounded-xl border-gray-300 px-4 py-3 text-sm shadow-sm transition placeholder:text-gray-400 focus:border-indigo-500 focus:ring-indigo-500 @error('class') border-red-300 @enderror">
-					@error('class')<p class="mt-1.5 text-sm text-red-600">{{ $message }}</p>@enderror
+					<label
+						for="class_id"
+						class="mb-2 block text-sm font-semibold text-gray-700">
+						Class <span class="text-red-500">*</span>
+					</label>
+
+				<select
+					id="class_id"
+					name="class"
+					required
+					class="block w-full rounded-xl border-gray-300 px-4 py-3 text-sm shadow-sm transition focus:border-indigo-500 focus:ring-indigo-500 @error('class_id') border-red-300 @enderror"
+				>
+
+					<option value="">
+						Select class
+					</option>
+
+					@foreach ($classes as $class)
+
+						<option
+							value="{{ $class->id }}"
+							{{ old('class_id') == $class->id ? 'selected' : '' }}
+						>
+							{{ $class->name }}
+						</option>
+
+					@endforeach
+
+				</select>
+
+				@error('class_id')
+					<p class="mt-1.5 text-sm text-red-600">
+						{{ $message }}
+					</p>
+				@enderror
+
 				</div>
+
 				<div>
-					<label for="section" class="mb-2 block text-sm font-semibold text-gray-700">Section <span class="font-normal text-gray-400">(optional)</span></label>
-					<input id="section" type="text" name="section" value="{{ old('section') }}" maxlength="10" placeholder="e.g. A" class="block w-full rounded-xl border-gray-300 px-4 py-3 text-sm shadow-sm transition placeholder:text-gray-400 focus:border-indigo-500 focus:ring-indigo-500 @error('section') border-red-300 @enderror">
-					@error('section')<p class="mt-1.5 text-sm text-red-600">{{ $message }}</p>@enderror
+					<label
+						for="section_id"
+						class="mb-2 block text-sm font-semibold text-gray-700"
+					>
+						Section
+						<span class="font-normal text-gray-400">
+							(optional)
+						</span>
+					</label>
+
+				<select
+					id="section_id"
+					name="section"
+					class="block w-full rounded-xl border-gray-300 px-4 py-3 text-sm shadow-sm transition focus:border-indigo-500 focus:ring-indigo-500 @error('section_id') border-red-300 @enderror"
+				>
+
+					<option value="">
+						Select section
+					</option>
+
+				</select>
+
+				@error('section_id')
+					<p class="mt-1.5 text-sm text-red-600">
+						{{ $message }}
+					</p>
+				@enderror
+
+
 				</div>
 				<div>
 					<label for="roll_number" class="mb-2 block text-sm font-semibold text-gray-700">Roll number <span class="font-normal text-gray-400">(optional)</span></label>
@@ -93,3 +153,142 @@
 </div>
 
 @endsection
+<script>
+
+document.addEventListener('DOMContentLoaded', function () {
+
+    const classSelect = document.getElementById('class_id');
+    const sectionSelect = document.getElementById('section_id');
+
+    if (!classSelect || !sectionSelect) {
+        console.error('Class or Section select not found.');
+        return;
+    }
+
+
+    function loadSections(classId, selectedSection = '') {
+
+        sectionSelect.innerHTML =
+            '<option value="">Select section</option>';
+
+        if (!classId) {
+            return;
+        }
+
+
+        /*
+         * Laravel-generated route.
+         * __CLASS_ID__ will be replaced with
+         * the selected class ID.
+         */
+        let url =
+            "{{ route('classes.sections', ['schoolClass' => '__CLASS_ID__']) }}";
+
+        url = url.replace(
+            '__CLASS_ID__',
+            classId
+        );
+
+
+        fetch(url, {
+            method: 'GET',
+
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            }
+
+        })
+
+        .then(response => {
+
+            if (!response.ok) {
+                throw new Error(
+                    'HTTP error: ' + response.status
+                );
+            }
+
+            return response.json();
+
+        })
+
+        .then(sections => {
+
+            sectionSelect.innerHTML =
+                '<option value="">Select section</option>';
+
+
+            sections.forEach(section => {
+
+                const option =
+                    document.createElement('option');
+
+                option.value = section.id;
+
+                option.textContent = section.name;
+
+
+                if (
+                    selectedSection &&
+                    selectedSection == section.id
+                ) {
+                    option.selected = true;
+                }
+
+
+                sectionSelect.appendChild(option);
+
+            });
+
+        })
+
+        .catch(error => {
+
+            console.error(
+                'Unable to load sections:',
+                error
+            );
+
+            sectionSelect.innerHTML =
+                '<option value="">Unable to load sections</option>';
+
+        });
+
+    }
+
+
+    /*
+     * Load sections when class changes.
+     */
+    classSelect.addEventListener('change', function () {
+
+        loadSections(
+            this.value
+        );
+
+    });
+
+
+    /*
+     * Restore old section after validation error.
+     */
+    const oldClass =
+        classSelect.value;
+
+    const oldSection =
+        "{{ old('section_id') }}";
+
+
+    if (oldClass) {
+
+        loadSections(
+            oldClass,
+            oldSection
+        );
+
+    }
+
+});
+
+</script>
+

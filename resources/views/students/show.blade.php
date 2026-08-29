@@ -80,7 +80,7 @@
                     </h3>
 
                     <p class="mt-1 text-sm text-gray-500">
-                        {{ $student->section ? 'Section ' . $student->section : 'Section not assigned' }}
+                        {{ $student->studentSection->name ? 'Section ' . $student->studentSection->name : 'Section not assigned' }}
                     </p>
 
                     <span class="mt-3 inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
@@ -153,7 +153,7 @@
                     </p>
 
                     <p class="mt-2 font-semibold text-gray-900">
-                        {{ $student->section ?: 'Not assigned' }}
+                        {{ $student->studentSection->name ?: 'Not assigned' }}
                     </p>
                 </div>
 

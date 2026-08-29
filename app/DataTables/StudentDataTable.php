@@ -3,56 +3,132 @@
 namespace App\DataTables;
 
 use App\Models\Student;
+use App\Models\SchoolClass;
+use App\Models\Section;
 use Illuminate\Http\Request;
 
 class StudentDataTable
 {
-    public function __construct(private readonly Request $request)
-    {
+    public function __construct(
+        private readonly Request $request
+    ) {
     }
 
     public function viewData(): array
     {
         $filters = $this->request->validate([
             'search' => 'nullable|string|max:100',
-            'class' => 'nullable|string|max:50',
-            'section' => 'nullable|string|max:10',
+            'class' => 'nullable|integer',
+            'section' => 'nullable|integer',
         ]);
 
-        $studentsQuery = Student::query();
+        $studentsQuery = Student::query()
+            ->with([
+                'schoolClass',
+                'StudentSection',
+            ]);
 
-        $studentsQuery->when($filters['search'] ?? null, function ($query, $search) {
-            $query->where(function ($studentQuery) use ($search) {
-                $studentQuery->where('name', 'like', "%{$search}%")
-                    ->orWhere('father_name', 'like', "%{$search}%")
-                    ->orWhere('phone', 'like', "%{$search}%")
-                    ->orWhere('roll_number', 'like', "%{$search}%");
-            });
-        });
+        /*
+         * Search
+         */
+        $studentsQuery->when(
+            $filters['search'] ?? null,
+            function ($query, $search) {
+                $query->where(function ($studentQuery) use ($search) {
+                    $studentQuery
+                        ->where('name', 'like', "%{$search}%")
+                        ->orWhere('father_name', 'like', "%{$search}%")
+                        ->orWhere('phone', 'like', "%{$search}%")
+                        ->orWhere('roll_number', 'like', "%{$search}%");
+                });
+            }
+        );
 
-        $studentsQuery->when($filters['class'] ?? null, fn ($query, $class) => $query->where('class', $class));
-        $studentsQuery->when($filters['section'] ?? null, fn ($query, $section) => $query->where('section', $section));
+        /*
+         * Filter by Class ID
+         *
+         * Students table column is `class`
+         */
+        $studentsQuery->when(
+            $filters['class'] ?? null,
+            fn ($query, $class) =>
+                $query->where('class', $class)
+        );
+
+        /*
+         * Filter by Section ID
+         *
+         * Students table column is `section`
+         */
+        $studentsQuery->when(
+            $filters['section'] ?? null,
+            fn ($query, $section) =>
+                $query->where('section', $section)
+        );
 
         return [
-            'students' => $studentsQuery->latest()->paginate(10)->withQueryString(),
-            'classes' => Student::query()->whereNotNull('class')->distinct()->orderBy('class')->pluck('class'),
-            'sections' => Student::query()->whereNotNull('section')->distinct()->orderBy('section')->pluck('section'),
+
+            /*
+             * Students
+             */
+            'students' => $studentsQuery
+                ->latest()
+                ->paginate(10)
+                ->withQueryString(),
+
+            /*
+             * Classes dropdown
+             */
+            'classes' => SchoolClass::query()
+                ->orderBy('name')
+                ->get(),
+
+            /*
+             * Sections dropdown
+             */
+            'sections' => Section::query()
+                ->with('schoolClass')
+                ->orderBy('name')
+                ->get(),
+
+            /*
+             * Active filters
+             */
             'filters' => $filters,
+
+            /*
+             * Table columns
+             */
             'columns' => $this->columns(),
         ];
     }
 
-    // This is the single source of truth for fields displayed in the student table.
+    /*
+     * Single source of truth for fields displayed
+     * in the student table.
+     */
     public function columns(): array
     {
         return [
-            ['key' => 'name', 'label' => 'Student'],
-            ['key' => 'father_name', 'label' => 'Father name'],
-            // ['key' => 'phone', 'label' => 'Phone'],
-            ['key' => 'class', 'label' => 'Class'],
-            ['key' => 'section', 'label' => 'Section'],
-            // ['key' => 'roll_number', 'label' => 'Roll number'],
-            // ['key' => 'admission_date', 'label' => 'Admission date'],
+            [
+                'key' => 'name',
+                'label' => 'Student',
+            ],
+
+            [
+                'key' => 'father_name',
+                'label' => 'Father name',
+            ],
+
+            [
+                'key' => 'schoolClass.name',
+                'label' => 'Class',
+            ],
+
+            [
+                'key' => 'StudentSection.name',
+                'label' => 'Section',
+            ],
         ];
     }
 }

@@ -6,6 +6,8 @@ use App\DataTables\StudentDataTable;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\SchoolClass;
+use App\Models\Section;
 
 class StudentController extends Controller
 {
@@ -23,7 +25,8 @@ class StudentController extends Controller
 
     public function create()
     {
-        return view('students.create');
+        $classes = \App\Models\SchoolClass::orderBy('name')->get();
+        return view('students.create' , compact('classes'));
     }
 
     public function store(Request $request)
@@ -53,7 +56,10 @@ class StudentController extends Controller
 
     public function edit(Student $student)
     {
-        return view('students.edit', compact('student'));
+        $classes = SchoolClass::orderBy('name')->get(); 
+        // Only load sections belonging to the student's current class 
+        $sections = Section::where('class_id', $student->class)->orderBy('name')->get();
+        return view('students.edit', compact( 'student', 'classes', 'sections' ));
     }
 
     public function update(Request $request, Student $student)

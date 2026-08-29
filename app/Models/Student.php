@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\SchoolClass;
+use App\Models\Section;
 
 class Student extends Model
 {
@@ -18,4 +21,13 @@ class Student extends Model
         'roll_number',
         'admission_date'
     ];
+   public function schoolClass(): BelongsTo
+    {
+        return $this->belongsTo(SchoolClass::class, 'class');
+    }
+
+    public function studentSection(): BelongsTo
+    {
+        return $this->belongsTo(Section::class, 'section');
+    }
 }

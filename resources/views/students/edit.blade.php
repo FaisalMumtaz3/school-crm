@@ -71,16 +71,88 @@
 					<p class="mt-1.5 text-xs text-gray-500">Enter 10 digits after the +92 country code.</p>
 					@error('phone')<p class="mt-1.5 text-sm text-red-600">{{ $message }}</p>@enderror
 				</div>
+				
+				{{-- Class --}}
 				<div>
-					<label for="class" class="mb-2 block text-sm font-semibold text-gray-700">Class <span class="text-red-500">*</span></label>
-					<input id="class" type="text" name="class" value="{{ old('class', $student->class) }}" required class="block w-full rounded-xl border-gray-300 px-4 py-3 text-sm shadow-sm transition focus:border-indigo-500 focus:ring-indigo-500 @error('class') border-red-300 @enderror">
-					@error('class')<p class="mt-1.5 text-sm text-red-600">{{ $message }}</p>@enderror
+					<label
+						for="class"
+						class="mb-2 block text-sm font-semibold text-gray-700"
+					>
+						Class <span class="text-red-500">*</span>
+					</label>
+
+					<select
+						id="class"
+						name="class"
+						required
+						class="block w-full rounded-xl border-gray-300 px-4 py-3 text-sm shadow-sm transition focus:border-indigo-500 focus:ring-indigo-500 @error('class') border-red-300 @enderror"
+					>
+						<option value="">
+							Select class
+						</option>
+
+						@foreach ($classes as $class)
+							<option
+								value="{{ $class->id }}"
+								@selected(
+									(string) old('class', $student->class) === (string) $class->id
+								)
+							>
+								{{ $class->name }}
+							</option>
+						@endforeach
+					</select>
+
+					@error('class')
+						<p class="mt-1.5 text-sm text-red-600">
+							{{ $message }}
+						</p>
+					@enderror
 				</div>
+
+
+				{{-- Section --}}
 				<div>
-					<label for="section" class="mb-2 block text-sm font-semibold text-gray-700">Section <span class="font-normal text-gray-400">(optional)</span></label>
-					<input id="section" type="text" name="section" value="{{ old('section', $student->section) }}" maxlength="10" placeholder="e.g. A" class="block w-full rounded-xl border-gray-300 px-4 py-3 text-sm shadow-sm transition placeholder:text-gray-400 focus:border-indigo-500 focus:ring-indigo-500 @error('section') border-red-300 @enderror">
-					@error('section')<p class="mt-1.5 text-sm text-red-600">{{ $message }}</p>@enderror
+					<label
+						for="section"
+						class="mb-2 block text-sm font-semibold text-gray-700"
+					>
+						Section
+						<span class="font-normal text-gray-400">
+							(optional)
+						</span>
+					</label>
+
+					<select
+						id="section"
+						name="section"
+						data-selected-section="{{ old('section', $student->section) }}"
+						class="block w-full rounded-xl border-gray-300 px-4 py-3 text-sm shadow-sm transition focus:border-indigo-500 focus:ring-indigo-500 @error('section') border-red-300 @enderror"
+					>
+						<option value="">
+							Select section
+						</option>
+
+						@foreach ($sections as $section)
+							<option
+								value="{{ $section->id }}"
+								@selected(
+									(string) old('section', $student->section) === (string) $section->id
+								)
+							>
+								{{ $section->name }}
+							</option>
+						@endforeach
+					</select>
+
+					@error('section')
+						<p class="mt-1.5 text-sm text-red-600">
+							{{ $message }}
+						</p>
+					@enderror
 				</div>
+
+
 				<div>
 					<label for="roll_number" class="mb-2 block text-sm font-semibold text-gray-700">Roll number <span class="font-normal text-gray-400">(optional)</span></label>
 					<input id="roll_number" type="number" name="roll_number" value="{{ old('roll_number', $student->roll_number) }}" min="1" step="1" inputmode="numeric" placeholder="e.g. 12" class="block w-full rounded-xl border-gray-300 px-4 py-3 text-sm shadow-sm transition placeholder:text-gray-400 focus:border-indigo-500 focus:ring-indigo-500 @error('roll_number') border-red-300 @enderror">
@@ -102,6 +174,130 @@
 			</div>
 		</form>
 	</section>
+
 </div>
 
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const classSelect = document.getElementById('class');
+    const sectionSelect = document.getElementById('section');
+
+    if (!classSelect || !sectionSelect) {
+        return;
+    }
+
+    /*
+     * Load sections belonging to the selected class.
+     */
+    function loadSections(classId, selectedSection = '') {
+
+        sectionSelect.innerHTML = '';
+
+        const defaultOption = document.createElement('option');
+        defaultOption.value = '';
+        defaultOption.textContent = 'Loading sections...';
+
+        sectionSelect.appendChild(defaultOption);
+
+        if (!classId) {
+            sectionSelect.innerHTML = '';
+
+            const option = document.createElement('option');
+            option.value = '';
+            option.textContent = 'Select section';
+
+            sectionSelect.appendChild(option);
+
+            return;
+        }
+
+        fetch(`/classes/${classId}/sections`, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => {
+
+            if (!response.ok) {
+                throw new Error(`HTTP error: ${response.status}`);
+            }
+
+            return response.json();
+
+        })
+        .then(sections => {
+
+            sectionSelect.innerHTML = '';
+
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.textContent = 'Select section';
+
+            sectionSelect.appendChild(defaultOption);
+
+            sections.forEach(section => {
+
+                const option = document.createElement('option');
+
+                option.value = section.id;
+                option.textContent = section.name;
+
+                if (
+                    String(section.id) === String(selectedSection)
+                ) {
+                    option.selected = true;
+                }
+
+                sectionSelect.appendChild(option);
+
+            });
+
+        })
+        .catch(error => {
+
+            console.error('Unable to load sections:', error);
+
+            sectionSelect.innerHTML = '';
+
+            const option = document.createElement('option');
+            option.value = '';
+            option.textContent = 'Unable to load sections';
+
+            sectionSelect.appendChild(option);
+
+        });
+    }
+
+
+    /*
+     * When class changes, load only its sections.
+     */
+    classSelect.addEventListener('change', function () {
+
+        const classId = this.value;
+
+        // New class = no old section should remain selected.
+        loadSections(classId, '');
+
+    });
+
+
+    /*
+     * On edit page load:
+     * load sections for the student's current class
+     * and preserve the student's existing section.
+     */
+    const initialClass = classSelect.value;
+    const initialSection = sectionSelect.dataset.selectedSection || '';
+
+    if (initialClass) {
+        loadSections(initialClass, initialSection);
+    }
+
+});
+</script>
+
 @endsection
+
