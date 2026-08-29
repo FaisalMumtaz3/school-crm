@@ -7,6 +7,7 @@ use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\ClassController;
 use App\Http\Controllers\SectionController;
+use App\Http\Controllers\AttendanceController;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/login');
@@ -32,6 +33,31 @@ Route::middleware('auth')->group(function () {
     Route::resource('classes', ClassController::class)->parameters([
         'classes' => 'schoolClass']);
     Route::resource('sections', SectionController::class);
+
+    Route::prefix('attendances')
+    ->name('attendances.')
+    ->group(function () {
+
+        Route::get('/', [
+            AttendanceController::class,
+            'index'
+        ])->name('index');
+
+        Route::get('/create', [
+            AttendanceController::class,
+            'create'
+        ])->name('create');
+
+        Route::post('/', [
+            AttendanceController::class,
+            'store'
+        ])->name('store');
+
+        Route::get('/show', [
+            AttendanceController::class,
+            'show'
+        ])->name('show');
+    });
     
 });
 

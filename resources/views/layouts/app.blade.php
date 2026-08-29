@@ -641,7 +641,7 @@
                     <span>Sections</span>
                 </a>
 
-                <a href="#" class="nav-item">
+                <a href="{{ route('attendances.index') }}" class="nav-item">
                     <span class="nav-icon">☑</span>
                     <span>Attendance</span>
                 </a>
