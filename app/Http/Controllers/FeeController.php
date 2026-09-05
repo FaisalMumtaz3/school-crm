@@ -12,6 +12,54 @@ use Illuminate\Support\Facades\DB;
 class FeeController extends Controller
 {
     /**
+     * Student-wise fee report.
+     */
+    public function report(Request $request)
+    {
+        $status = $request->input('status');
+
+        $query = Fee::query()
+            ->with(['student.schoolClass', 'student.studentSection'])
+            ->orderByDesc('year')
+            ->orderByDesc('month')
+            ->orderBy('student_id');
+
+        if ($request->filled('class')) {
+            $query->whereHas('student', function ($studentQuery) use ($request) {
+                $studentQuery->where('class', $request->input('class'));
+            });
+        }
+
+        if ($request->filled('section')) {
+            $query->whereHas('student', function ($studentQuery) use ($request) {
+                $studentQuery->where('section', $request->input('section'));
+            });
+        }
+
+        if (in_array($status, ['paid', 'partial', 'unpaid'], true)) {
+            $query->where('status', $status);
+        }
+
+        $fees = $query
+            ->paginate(25)
+            ->withQueryString();
+
+        $classes = SchoolClass::query()
+            ->orderBy('name')
+            ->get();
+
+        $sections = Section::query()
+            ->orderBy('name')
+            ->get();
+
+        return view('reports.fees', compact(
+            'fees',
+            'classes',
+            'sections'
+        ));
+    }
+
+    /**
      * Fee records.
      */
     public function index(Request $request)

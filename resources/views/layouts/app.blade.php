@@ -669,9 +669,9 @@
                     Management
                 </div>
 
-                <a href="#" class="nav-item">
+                <a href="{{ route('reports.fees') }}" class="nav-item {{ request()->routeIs('reports.fees') ? 'active' : '' }}">
                     <span class="nav-icon">▥</span>
-                    <span>Reports</span>
+                    <span>Fee Report</span>
                 </a>
 
             </div>

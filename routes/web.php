@@ -55,6 +55,11 @@ Route::middleware('auth')->group(function () {
         ])->name('store');
     });
 
+    Route::get('/reports/fees', [
+        FeeController::class,
+        'report'
+    ])->name('reports.fees');
+
     Route::prefix('attendances')
     ->name('attendances.')
     ->group(function () {
