@@ -8,6 +8,7 @@ use App\Http\Controllers\ExportController;
 use App\Http\Controllers\ClassController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\FeeController;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/login');
@@ -33,6 +34,26 @@ Route::middleware('auth')->group(function () {
     Route::resource('classes', ClassController::class)->parameters([
         'classes' => 'schoolClass']);
     Route::resource('sections', SectionController::class);
+
+    Route::prefix('fees')
+    ->name('fees.')
+    ->group(function () {
+
+        Route::get('/', [
+            FeeController::class,
+            'index'
+        ])->name('index');
+
+        Route::get('/create', [
+            FeeController::class,
+            'create'
+        ])->name('create');
+
+        Route::post('/', [
+            FeeController::class,
+            'store'
+        ])->name('store');
+    });
 
     Route::prefix('attendances')
     ->name('attendances.')

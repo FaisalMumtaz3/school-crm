@@ -655,7 +655,7 @@
                     Finance
                 </div>
 
-                <a href="#" class="nav-item">
+                <a href="{{ route('fees.index') }}" class="nav-item">
                     <span class="nav-icon">₨</span>
                     <span>Fees</span>
                 </a>
