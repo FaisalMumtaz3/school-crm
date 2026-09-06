@@ -387,29 +387,13 @@
 
 
                             <td class="whitespace-nowrap px-5 py-4 text-sm text-gray-600">
-
-                                @php
-                                    $classModel = $classes->firstWhere(
-                                        'id',
-                                        $fee->student->class
-                                    );
-                                @endphp
-
-                                {{ $classModel?->name ?? '-' }}
+                                {{ $fee->student->schoolClass?->name ?? '-' }}
 
                             </td>
 
 
                             <td class="whitespace-nowrap px-5 py-4 text-sm text-gray-600">
-
-                                @php
-                                    $sectionModel = $sections->firstWhere(
-                                        'id',
-                                        $fee->student->section
-                                    );
-                                @endphp
-
-                                {{ $sectionModel?->name ?? '-' }}
+                                {{ $fee->student->studentSection?->name ?? '-' }}
 
                             </td>
 

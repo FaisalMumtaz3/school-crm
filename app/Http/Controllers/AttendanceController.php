@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Attendance;
-use App\Models\Student;
 use App\Models\Section;
+use App\Models\SchoolClass;
+use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -15,7 +16,10 @@ class AttendanceController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Attendance::with('student')
+        $query = Attendance::with([
+            'student.schoolClass',
+            'student.studentSection',
+        ])
             ->orderByDesc('date')
             ->orderBy('id');
 
@@ -51,21 +55,13 @@ class AttendanceController extends Controller
 
         $attendances = $query->paginate(20)->withQueryString();
 
-        // Classes currently available in students table
-        $classes = Student::query()
-            ->whereNotNull('class')
-            ->where('class', '!=', '')
-            ->distinct()
-            ->orderBy('class')
-            ->pluck('class');
+        $classes = SchoolClass::query()
+            ->orderBy('name')
+            ->get();
 
-        // Sections currently available in students table
-        $sections = Student::query()
-            ->whereNotNull('section')
-            ->where('section', '!=', '')
-            ->distinct()
-            ->orderBy('section')
-            ->pluck('section');
+        $sections = Section::query()
+            ->orderBy('name')
+            ->get();
 
         return view('attendances.index', compact(
             'attendances',

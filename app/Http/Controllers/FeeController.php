@@ -65,7 +65,8 @@ class FeeController extends Controller
     public function index(Request $request)
     {
         $query = Fee::with([
-            'student',
+            'student.schoolClass',
+            'student.studentSection',
         ])
         ->orderByDesc('year')
         ->orderByDesc('month')

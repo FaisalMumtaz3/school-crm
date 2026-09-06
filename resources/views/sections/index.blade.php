@@ -2,22 +2,22 @@
 
 @section('content')
 
-<div class="flex h-full min-h-0 w-full flex-col space-y-6">
+<div class="mx-auto flex min-h-full w-full max-w-7xl flex-col space-y-6">
 
 {{-- Header --}}
-<div class="flex shrink-0 flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+<div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
 
     <div>
 
-        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-600">
-            School directory
+        <p class="text-sm font-medium text-indigo-600">
+            School Management
         </p>
 
-        <h2 class="mt-1 text-3xl font-bold tracking-tight text-gray-900">
+        <h1 class="mt-1 text-2xl font-bold tracking-tight text-gray-900">
             Sections
         </h2>
 
-        <p class="mt-2 text-sm text-gray-500">
+        <p class="mt-1 text-sm text-gray-500">
             Manage school sections and their corresponding classes.
         </p>
 

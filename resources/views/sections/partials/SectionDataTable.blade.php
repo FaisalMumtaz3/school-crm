@@ -1,6 +1,6 @@
 <section
     id="section-datatable"
-    class="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm"
+    class="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm"
 >
 
 {{-- Table Header --}}
@@ -130,7 +130,7 @@
                     @foreach ($columns as $column)
 
                         <th
-                            class="whitespace-nowrap px-6 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-gray-500"
+                            class="whitespace-nowrap px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500"
                         >
                             {{ $column['label'] }}
                         </th>
@@ -138,7 +138,7 @@
                     @endforeach
 
 
-                    <th class="relative px-6 py-3.5">
+                    <th class="relative px-5 py-3">
 
                         <span class="sr-only">
                             Actions
@@ -155,7 +155,7 @@
 
                 @foreach ($sections as $section)
 
-                    <tr class="transition hover:bg-indigo-50/30">
+                    <tr class="transition hover:bg-gray-50">
 
 
                         @foreach ($columns as $column)
@@ -166,7 +166,7 @@
 
 
                             <td
-                                class="whitespace-nowrap px-6 py-4 text-sm text-gray-600"
+                                class="whitespace-nowrap px-5 py-4 text-sm text-gray-600"
                             >
 
                                 {{-- Section Name --}}
@@ -218,7 +218,7 @@
 
 
                         {{-- Actions --}}
-                        <td class="relative whitespace-nowrap px-6 py-4 text-right">
+                        <td class="relative whitespace-nowrap px-5 py-4 text-right">
 
                             <details class="section-actions relative inline-block">
 

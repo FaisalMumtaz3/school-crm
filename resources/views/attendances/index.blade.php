@@ -111,10 +111,10 @@
                     @foreach($classes as $class)
 
                         <option
-                            value="{{ $class }}"
-                            {{ request('class') == $class ? 'selected' : '' }}
+                            value="{{ $class->id }}"
+                            {{ (string) request('class') === (string) $class->id ? 'selected' : '' }}
                         >
-                            {{ $class }}
+                            {{ $class->name }}
                         </option>
 
                     @endforeach
@@ -143,10 +143,10 @@
                     @foreach($sections as $section)
 
                         <option
-                            value="{{ $section }}"
-                            {{ request('section') == $section ? 'selected' : '' }}
+                            value="{{ $section->id }}"
+                            {{ (string) request('section') === (string) $section->id ? 'selected' : '' }}
                         >
-                            {{ $section }}
+                            {{ $section->name }}
                         </option>
 
                     @endforeach
@@ -340,12 +340,12 @@
 
 
                             <td class="whitespace-nowrap px-5 py-4 text-sm text-gray-600">
-                                {{ $attendance->student->class }}
+                                {{ $attendance->student->schoolClass?->name ?? '-' }}
                             </td>
 
 
                             <td class="whitespace-nowrap px-5 py-4 text-sm text-gray-600">
-                                {{ $attendance->student->section ?: '-' }}
+                                {{ $attendance->student->studentSection?->name ?? '-' }}
                             </td>
 
 
