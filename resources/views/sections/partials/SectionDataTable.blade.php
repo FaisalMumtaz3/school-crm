@@ -196,16 +196,6 @@
                                     </div>
 
 
-                                {{-- Class --}}
-                                @elseif ($column['key'] === 'school_class.name')
-
-                                    <span
-                                        class="inline-flex items-center rounded-lg bg-gray-100 px-3 py-1.5 text-xs font-semibold text-gray-700"
-                                    >
-                                        {{ $value ?: 'Not assigned' }}
-                                    </span>
-
-
                                 @else
 
                                     {{ $value ?: 'Not assigned' }}

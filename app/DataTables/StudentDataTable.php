@@ -25,7 +25,7 @@ class StudentDataTable
         $studentsQuery = Student::query()
             ->with([
                 'schoolClass',
-                'StudentSection',
+                'studentSection',
             ]);
 
         /*
@@ -87,7 +87,6 @@ class StudentDataTable
              * Sections dropdown
              */
             'sections' => Section::query()
-                ->with('schoolClass')
                 ->orderBy('name')
                 ->get(),
 
@@ -126,7 +125,7 @@ class StudentDataTable
             ],
 
             [
-                'key' => 'StudentSection.name',
+                'key' => 'studentSection.name',
                 'label' => 'Section',
             ],
         ];

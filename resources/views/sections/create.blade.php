@@ -27,7 +27,7 @@
     </h2>
 
     <p class="mt-2 text-sm text-gray-500">
-        Add a section and assign it to a class.
+        Add a reusable section such as A or B.
     </p>
 </div>
 
@@ -43,7 +43,7 @@
 
         @csrf
 
-        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <div class="grid grid-cols-1 gap-6">
 
             {{-- Section Name --}}
             <div>
@@ -70,43 +70,6 @@
                 @enderror
             </div>
 
-
-            {{-- Class --}}
-            <div>
-                <label
-                    for="class_id"
-                    class="mb-2 block text-sm font-semibold text-gray-700"
-                >
-                    Class
-                </label>
-
-                <select
-                    name="class_id"
-                    id="class_id"
-                    class="block w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
-                >
-
-                    <option value="">
-                        Select Class
-                    </option>
-
-                    @foreach($classes as $class)
-                        <option
-                            value="{{ $class->id }}"
-                            {{ old('class_id') == $class->id ? 'selected' : '' }}
-                        >
-                            {{ $class->name }}
-                        </option>
-                    @endforeach
-
-                </select>
-
-                @error('class_id')
-                    <p class="mt-2 text-sm font-medium text-red-600">
-                        {{ $message }}
-                    </p>
-                @enderror
-            </div>
 
         </div>
 

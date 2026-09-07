@@ -106,22 +106,7 @@ class AttendanceController extends Controller
         |
         */
 
-        $sections = collect();
-
-        if ($selectedClass) {
-
-            $sectionIds = Student::query()
-                ->where('class', $selectedClass)
-                ->whereNotNull('section')
-                ->where('section', '!=', '')
-                ->distinct()
-                ->pluck('section');
-
-            $sections = \App\Models\Section::query()
-                ->whereIn('id', $sectionIds)
-                ->orderBy('name')
-                ->get();
-        }
+        $sections = Section::query()->orderBy('name')->get();
 
 
         /*

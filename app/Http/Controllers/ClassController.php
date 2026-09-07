@@ -66,15 +66,4 @@ class ClassController extends Controller
         return redirect()->route('classes.index')
             ->with('success', 'Class deleted successfully');
     }
-    public function sections(SchoolClass $schoolClass)
-    {
-        return response()->json(
-            $schoolClass->sections()
-                ->orderBy('name')
-                ->get([
-                    'id',
-                    'name',
-                ])
-        );
-    }
 }

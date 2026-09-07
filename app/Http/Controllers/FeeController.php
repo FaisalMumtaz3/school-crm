@@ -255,15 +255,7 @@ class FeeController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $sections = collect();
-
-        if ($selectedClass) {
-
-            $sections = Section::query()
-                ->where('class_id', $selectedClass)
-                ->orderBy('name')
-                ->get();
-        }
+        $sections = Section::query()->orderBy('name')->get();
 
 
         /*

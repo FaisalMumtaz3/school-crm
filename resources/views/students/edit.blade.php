@@ -126,7 +126,6 @@
 					<select
 						id="section"
 						name="section"
-						data-selected-section="{{ old('section', $student->section) }}"
 						class="block w-full rounded-xl border-gray-300 px-4 py-3 text-sm shadow-sm transition focus:border-indigo-500 focus:ring-indigo-500 @error('section') border-red-300 @enderror"
 					>
 						<option value="">
@@ -190,7 +189,9 @@ document.addEventListener('DOMContentLoaded', function () {
     /*
      * Load sections belonging to the selected class.
      */
-    function loadSections(classId, selectedSection = '') {
+	function loadSections(classId, selectedSection = '') {
+
+		return;
 
         sectionSelect.innerHTML = '';
 

@@ -26,7 +26,9 @@ class StudentController extends Controller
     public function create()
     {
         $classes = \App\Models\SchoolClass::orderBy('name')->get();
-        return view('students.create' , compact('classes'));
+        $sections = Section::orderBy('name')->get();
+
+        return view('students.create', compact('classes', 'sections'));
     }
 
     public function store(Request $request)
@@ -57,8 +59,7 @@ class StudentController extends Controller
     public function edit(Student $student)
     {
         $classes = SchoolClass::orderBy('name')->get(); 
-        // Only load sections belonging to the student's current class 
-        $sections = Section::where('class_id', $student->class)->orderBy('name')->get();
+        $sections = Section::orderBy('name')->get();
         return view('students.edit', compact( 'student', 'classes', 'sections' ));
     }
 

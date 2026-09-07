@@ -69,7 +69,7 @@
                             value="{{ $section->id }}"
                             {{ (string) request('section') === (string) $section->id ? 'selected' : '' }}
                         >
-                            {{ $section->schoolClass?->name }} - {{ $section->name }}
+                            {{ $section->name }}
                         </option>
                     @endforeach
                 </select>

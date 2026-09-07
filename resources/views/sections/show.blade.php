@@ -18,7 +18,7 @@
         </h2>
 
         <p class="mt-2 text-sm text-gray-500">
-            {{ $section->schoolClass->name ?? 'Class not assigned' }}
+            Reusable section
         </p>
 
     </div>
@@ -85,7 +85,7 @@
                 </h3>
 
                 <p class="mt-1 text-sm text-gray-500">
-                    {{ $section->schoolClass->name ?? 'Class not assigned' }}
+                    Reusable across all classes
                 </p>
 
                 <span class="mt-3 inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
@@ -126,7 +126,7 @@
                 </p>
 
                 <p class="mt-2 font-semibold text-gray-900">
-                    {{ $section->schoolClass->name ?? 'Not assigned' }}
+                    Reusable across all classes
                 </p>
 
             </div>

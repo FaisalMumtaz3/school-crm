@@ -19,11 +19,11 @@ class SectionDataTable
         /*
          * Query
          */
-        $query = Section::with('schoolClass');
+        $query = Section::query();
 
 
         /*
-         * Search Section or Class
+         * Search Section
          */
         if (!empty($filters['search'])) {
 
@@ -35,19 +35,6 @@ class SectionDataTable
                     'name',
                     'like',
                     '%' . $search . '%'
-                );
-
-                $q->orWhereHas(
-                    'schoolClass',
-                    function ($classQuery) use ($search) {
-
-                        $classQuery->where(
-                            'name',
-                            'like',
-                            '%' . $search . '%'
-                        );
-
-                    }
                 );
 
             });
@@ -77,11 +64,6 @@ class SectionDataTable
             [
                 'key' => 'name',
                 'label' => 'Section',
-            ],
-
-            [
-                'key' => 'schoolClass.name',
-                'label' => 'Class',
             ],
 
             [

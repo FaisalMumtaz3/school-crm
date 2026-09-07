@@ -61,16 +61,16 @@
 				</div>
 				<div>
 					<label
-						for="class_id"
+						for="class"
 						class="mb-2 block text-sm font-semibold text-gray-700">
 						Class <span class="text-red-500">*</span>
 					</label>
 
 				<select
-					id="class_id"
+					id="class"
 					name="class"
 					required
-					class="block w-full rounded-xl border-gray-300 px-4 py-3 text-sm shadow-sm transition focus:border-indigo-500 focus:ring-indigo-500 @error('class_id') border-red-300 @enderror"
+					class="block w-full rounded-xl border-gray-300 px-4 py-3 text-sm shadow-sm transition focus:border-indigo-500 focus:ring-indigo-500 @error('class') border-red-300 @enderror"
 				>
 
 					<option value="">
@@ -81,8 +81,7 @@
 
 						<option
 							value="{{ $class->id }}"
-							{{ old('class_id') == $class->id ? 'selected' : '' }}
-						>
+							{{ old('class') == $class->id ? 'selected' : '' }}
 							{{ $class->name }}
 						</option>
 
@@ -90,7 +89,7 @@
 
 				</select>
 
-				@error('class_id')
+				@error('class')
 					<p class="mt-1.5 text-sm text-red-600">
 						{{ $message }}
 					</p>
@@ -100,7 +99,7 @@
 
 				<div>
 					<label
-						for="section_id"
+						for="section"
 						class="mb-2 block text-sm font-semibold text-gray-700"
 					>
 						Section
@@ -110,18 +109,27 @@
 					</label>
 
 				<select
-					id="section_id"
+					id="section"
 					name="section"
-					class="block w-full rounded-xl border-gray-300 px-4 py-3 text-sm shadow-sm transition focus:border-indigo-500 focus:ring-indigo-500 @error('section_id') border-red-300 @enderror"
+					class="block w-full rounded-xl border-gray-300 px-4 py-3 text-sm shadow-sm transition focus:border-indigo-500 focus:ring-indigo-500 @error('section') border-red-300 @enderror"
 				>
 
 					<option value="">
 						Select section
 					</option>
 
+					@foreach ($sections as $section)
+						<option
+							value="{{ $section->id }}"
+							@selected((string) old('section') === (string) $section->id)
+						>
+							{{ $section->name }}
+						</option>
+					@endforeach
+
 				</select>
 
-				@error('section_id')
+				@error('section')
 					<p class="mt-1.5 text-sm text-red-600">
 						{{ $message }}
 					</p>
@@ -157,8 +165,8 @@
 
 document.addEventListener('DOMContentLoaded', function () {
 
-    const classSelect = document.getElementById('class_id');
-    const sectionSelect = document.getElementById('section_id');
+	const classSelect = document.getElementById('class');
+	const sectionSelect = document.getElementById('section');
 
     if (!classSelect || !sectionSelect) {
         console.error('Class or Section select not found.');
@@ -166,7 +174,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 
-    function loadSections(classId, selectedSection = '') {
+	function loadSections(classId, selectedSection = '') {
+
+		return;
 
         sectionSelect.innerHTML =
             '<option value="">Select section</option>';
@@ -182,7 +192,7 @@ document.addEventListener('DOMContentLoaded', function () {
          * the selected class ID.
          */
         let url =
-            "{{ route('classes.sections', ['schoolClass' => '__CLASS_ID__']) }}";
+			'';
 
         url = url.replace(
             '__CLASS_ID__',
@@ -276,7 +286,7 @@ document.addEventListener('DOMContentLoaded', function () {
         classSelect.value;
 
     const oldSection =
-        "{{ old('section_id') }}";
+		"{{ old('section') }}";
 
 
     if (oldClass) {

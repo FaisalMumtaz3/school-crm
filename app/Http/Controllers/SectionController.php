@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\DataTables\SectionDataTable;
 use App\Models\Section;
-use App\Models\SchoolClass;
 use Illuminate\Http\Request;
 
 class SectionController extends Controller
@@ -28,21 +27,16 @@ class SectionController extends Controller
 
     public function create()
     {
-        $classes = SchoolClass::orderBy('name')->get();
-
-        return view('sections.create', compact('classes'));
+        return view('sections.create');
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'class_id' => 'required|exists:classes,id',
         ]);
 
-        $exists = Section::where('class_id', $validated['class_id'])
-            ->where('name', $validated['name'])
-            ->exists();
+        $exists = Section::where('name', $validated['name'])->exists();
 
         if ($exists) {
             return back()
@@ -61,8 +55,6 @@ class SectionController extends Controller
 
     public function show(Section $section)
     {
-        $section->load('schoolClass');
-
         return view(
             'sections.show',
             compact('section')
@@ -71,11 +63,9 @@ class SectionController extends Controller
 
     public function edit(Section $section)
     {
-        $classes = SchoolClass::orderBy('name')->get();
-
         return view(
             'sections.edit',
-            compact('section', 'classes')
+            compact('section')
         );
     }
 
@@ -83,11 +73,10 @@ class SectionController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'class_id' => 'required|exists:classes,id',
         ]);
 
-        $exists = Section::where('class_id', $validated['class_id'])
-            ->where('name', $validated['name'])
+        $exists = Section::where('name', $validated['name'])
+            ->where('id', '!=', $section->id)
             ->where('id', '!=', $section->id)
             ->exists();
 

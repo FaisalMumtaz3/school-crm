@@ -18,7 +18,7 @@
         </h2>
 
         <p class="mt-1 text-sm text-gray-500">
-            Manage school sections and their corresponding classes.
+            Manage reusable sections shared across all classes.
         </p>
 
     </div>
