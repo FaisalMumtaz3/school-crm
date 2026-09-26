@@ -52,10 +52,21 @@ class FeeController extends Controller
             ->orderBy('name')
             ->get();
 
+        $years = Fee::query()
+            ->select('year')
+            ->distinct()
+            ->orderByDesc('year')
+            ->pluck('year');
+
+        if (!$years->contains(now()->year)) {
+            $years->prepend(now()->year);
+        }
+
         return view('reports.fees', compact(
             'fees',
             'classes',
-            'sections'
+            'sections',
+            'years'
         ));
     }
 

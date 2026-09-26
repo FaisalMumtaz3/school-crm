@@ -2,28 +2,28 @@
 
 @section('content')
 
-<div class="flex h-full min-h-0 w-full flex-col space-y-6">
+<div class="space-y-6">
 
 
 {{-- Header --}}
-<div class="flex shrink-0 flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+<div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
     <div>
-        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-600">
-            School directory
+        <p class="text-sm font-semibold uppercase tracking-wide text-primary-600">
+            School Directory
         </p>
 
-        <h2 class="mt-1 text-3xl font-bold tracking-tight text-gray-900">
+        <h1 class="mt-1 text-2xl font-bold tracking-tight text-gray-900">
             Classes
-        </h2>
+        </h1>
 
-        <p class="mt-2 text-sm text-gray-500">
+        <p class="mt-1 text-sm text-gray-500">
             Manage school classes and class records.
         </p>
     </div>
 
     <a
         href="{{ route('classes.create') }}"
-        class="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm shadow-indigo-200 transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+        class="btn btn-primary"
     >
         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path
@@ -34,18 +34,18 @@
             />
         </svg>
 
-        Add class
+        Add Class
     </a>
 </div>
 
 {{-- Success message --}}
 @if (session('success'))
     <div
-        class="flex shrink-0 items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800"
+        class="flex items-center gap-3 rounded-xl border border-success-200 bg-success-50 px-4 py-3 text-sm font-medium text-success-800"
         role="status"
     >
         <svg
-            class="h-5 w-5 shrink-0 text-emerald-600"
+            class="h-5 w-5 shrink-0 text-success-600"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"

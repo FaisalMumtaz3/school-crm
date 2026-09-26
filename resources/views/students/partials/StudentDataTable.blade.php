@@ -1,16 +1,16 @@
 <section
     id="student-datatable"
-    class="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm"
+    class="card overflow-hidden"
 >
 
 {{-- Table Header --}}
 <div
-    class="flex shrink-0 flex-col gap-4 border-b border-gray-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6"
+    class="card-header flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
 >
 
     <div>
         <h3 class="font-semibold text-gray-900">
-            All students
+            All Students
         </h3>
 
         <p class="mt-1 text-sm text-gray-500">
@@ -28,7 +28,7 @@
             'class' => request('class'),
             'section' => request('section'),
         ]) }}"
-        class="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700"
+        class="btn btn-success"
     >
         <svg
             class="h-4 w-4"
@@ -70,13 +70,13 @@
                 value="{{ $filters['search'] ?? '' }}"
                 placeholder="Search students..."
                 autocomplete="off"
-                class="w-full rounded-xl border-gray-300 py-2.5 pl-3 pr-10 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                class="form-input form-input pr-10"
             >
 
             <button
                 type="submit"
                 aria-label="Search students"
-                class="absolute right-1.5 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-lg text-indigo-600 transition hover:bg-indigo-50"
+                class="absolute right-1.5 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-lg text-primary-600 transition hover:bg-primary-50"
             >
                 <svg
                     class="h-4 w-4"
@@ -105,7 +105,7 @@
 
             <select
                 name="class"
-                class="w-full rounded-xl border-gray-300 py-2.5 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500 lg:w-36"
+                class="form-input form-select lg:w-36"
             >
 
                 <option value="">
@@ -139,7 +139,7 @@
 
             <select
                 name="section"
-                class="w-full rounded-xl border-gray-300 py-2.5 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500 lg:w-36"
+                class="form-input form-select lg:w-36"
             >
 
                 <option value="">
@@ -169,7 +169,7 @@
 
             <a
                 href="{{ route('students.index') }}"
-                class="inline-flex items-center justify-center rounded-xl border border-gray-300 px-4 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
+                class="btn btn-secondary"
             >
                 Clear
             </a>
@@ -184,7 +184,7 @@
 {{-- Empty State --}}
 @if ($students->isEmpty())
 
-    <div class="flex flex-1 items-center justify-center px-6 py-16 text-center">
+    <div class="card-body flex flex-1 items-center justify-center text-center">
 
         <div>
 
@@ -198,7 +198,7 @@
 
             <a
                 href="{{ route('students.index') }}"
-                class="mt-5 inline-flex rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700"
+                class="mt-5 btn btn-primary"
             >
                 Clear filters
             </a>
@@ -210,11 +210,11 @@
 @else
 
     {{-- Table --}}
-    <div class="min-h-0 flex-1 overflow-auto">
+    <div class="table-container">
 
-        <table class="min-w-full divide-y divide-gray-100">
+        <table class="table">
 
-            <thead class="sticky top-0 z-20 bg-gray-50">
+            <thead>
 
                 <tr>
 
@@ -241,7 +241,7 @@
             </thead>
 
 
-            <tbody class="divide-y divide-gray-100 bg-white">
+            <tbody class="divide-y divide-gray-100">
 
                 @foreach ($students as $student)
 
@@ -263,7 +263,7 @@
                                     <div class="flex items-center gap-3">
 
                                         <span
-                                            class="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-100 text-sm font-bold text-indigo-700"
+                                            class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-100 text-sm font-bold text-primary-700"
                                         >
                                             {{ strtoupper(substr($value, 0, 1)) }}
                                         </span>
@@ -288,7 +288,7 @@
                                 @elseif ($column['key'] === 'schoolClass.name')
 
                                     <span
-                                        class="rounded-full bg-sky-50 px-2.5 py-1 text-xs font-semibold text-sky-700"
+                                        class="badge badge-info"
                                     >
                                         {{ $value ?: 'Not assigned' }}
                                     </span>
@@ -298,7 +298,7 @@
                                 @elseif ($column['key'] === 'StudentSection.name')
 
                                     <span
-                                        class="rounded-full bg-indigo-50 px-2.5 py-1 text-xs font-semibold text-indigo-700"
+                                        class="badge badge-primary"
                                     >
                                         {{ $value ?: 'Not assigned' }}
                                     </span>
@@ -357,14 +357,14 @@
 
                                     <a
                                         href="{{ route('students.show', $student) }}"
-                                        class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-700"
+                                        class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary-700"
                                     >
                                         View
                                     </a>
 
                                     <a
                                         href="{{ route('students.edit', $student) }}"
-                                        class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-700"
+                                        class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary-700"
                                     >
                                         Edit
                                     </a>
@@ -381,7 +381,7 @@
 
                                         <button
                                             type="submit"
-                                            class="block w-full px-4 py-2.5 text-left text-sm text-red-600 hover:bg-red-50"
+                                            class="block w-full px-4 py-2.5 text-left text-sm text-danger-600 hover:bg-danger-50"
                                         >
                                             Delete
                                         </button>
@@ -409,7 +409,7 @@
     @if ($students->hasPages())
 
         <div
-            class="shrink-0 border-t border-gray-100 px-5 py-4 sm:px-6"
+            class="card-footer"
         >
             {{ $students->links() }}
         </div>
