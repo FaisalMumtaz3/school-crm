@@ -1206,7 +1206,7 @@
                 </div>
             </div>
 
-            <form method="POST" action="{{ route('logout') }}" style="display: inline;">
+            <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <button type="submit" class="logout-btn" title="Sign out">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
