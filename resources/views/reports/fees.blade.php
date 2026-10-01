@@ -199,7 +199,7 @@
         <div class="card-header flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
                 <h2 class="font-semibold text-gray-900">Student Fee Details</h2>
-                <p class="mt-1 text-sm text-gray-500">{{ $fees->total() }} student fee records</p>
+                <p class="mt-1 text-sm text-gray-500">{{ $fees->total() }} student fee records{{ auth()->user()->isAdmin() ? ' across all schools' : '' }}</p>
             </div>
             <div class="flex items-center gap-2">
                 <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
@@ -212,6 +212,9 @@
             <table class="table">
                 <thead>
                     <tr>
+                        @if (auth()->user()->isAdmin())
+                        <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">School</th>
+                        @endif
                         <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">Student</th>
                         <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 hidden md:table-cell">Class</th>
                         <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 hidden lg:table-cell">Section</th>
@@ -226,6 +229,11 @@
                 <tbody class="divide-y divide-gray-100">
                     @forelse($fees as $fee)
                         <tr class="transition hover:bg-gray-50 group">
+                            @if (auth()->user()->isAdmin())
+                            <td class="whitespace-nowrap px-5 py-4">
+                                <span class="badge badge-success">{{ $fee->school->name ?? 'N/A' }}</span>
+                            </td>
+                            @endif
                             <td class="whitespace-nowrap px-5 py-4">
                                 <div class="flex items-center gap-3">
                                     <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-100 text-sm font-bold text-primary-700 group-hover:scale-110 transition-transform">

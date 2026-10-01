@@ -40,7 +40,7 @@
                     Active
                 </span>
             </div>
-            <p class="mt-3 text-sm text-primary-100 relative z-10">Enrolled across the school</p>
+            <p class="mt-3 text-sm text-primary-100 relative z-10">Enrolled {{ auth()->user()->isAdmin() ? 'across all schools' : 'in this school' }}</p>
         </article>
 
         <article class="stat-card relative overflow-hidden">
@@ -90,7 +90,7 @@
             <div class="flex items-start justify-between relative z-10">
                 <div>
                     <p class="text-sm font-medium text-gray-500">Total Classes</p>
-                    <p class="mt-2 text-4xl font-bold tracking-tight text-gray-900">{{ number_format($studentsClasses) }}</p>
+                    <p class="mt-2 text-4xl font-bold tracking-tight text-gray-900">{{ number_format($studentsClasses ?? $totalClasses ?? 0) }}</p>
                 </div>
                 <span class="rounded-xl bg-info-100 p-3 text-info-600" aria-hidden="true">
                     <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 19.5A2.5 2.5 0 0 0 6.5 22H20V2H6.5A2.5 2.5 0 0 0 4 4.5v15Z" /></svg>

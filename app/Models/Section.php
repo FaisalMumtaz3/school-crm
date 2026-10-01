@@ -3,8 +3,32 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Traits\SchoolScope;
 
 class Section extends Model
 {
-    protected $fillable = ['name'];
+    use HasFactory, SchoolScope;
+
+    protected $fillable = [
+        'school_id',
+        'name',
+    ];
+
+    public function school(): BelongsTo
+    {
+        return $this->belongsTo(School::class);
+    }
+
+    public function schoolClass(): BelongsTo
+    {
+        return $this->belongsTo(SchoolClass::class);
+    }
+
+    public function students(): HasMany
+    {
+        return $this->hasMany(Student::class, 'section');
+    }
 }

@@ -294,6 +294,7 @@
 
             <p class="mt-1 text-sm text-gray-500">
                 {{ $fees->total() }} fee records
+                {{ auth()->user()->isAdmin() ? 'across all schools' : '' }}
             </p>
 
         </div>
@@ -308,6 +309,12 @@
             <thead>
 
                 <tr>
+
+                    @if (auth()->user()->isAdmin())
+                    <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
+                        School
+                    </th>
+                    @endif
 
                     <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
                         Month
@@ -359,6 +366,12 @@
                 @forelse($fees as $fee)
 
                     <tr class="transition hover:bg-gray-50">
+
+                        @if (auth()->user()->isAdmin())
+                        <td class="whitespace-nowrap px-5 py-4 text-sm text-gray-600">
+                            <span class="badge badge-success">{{ $fee->school->name ?? 'N/A' }}</span>
+                        </td>
+                        @endif
 
                         <td class="whitespace-nowrap px-5 py-4 text-sm text-gray-600">
 

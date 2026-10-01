@@ -8,6 +8,7 @@ use App\Models\Section;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class FeeController extends Controller
 {
@@ -16,10 +17,12 @@ class FeeController extends Controller
      */
     public function report(Request $request)
     {
+        $this->checkPermission('fees');
+
         $status = $request->input('status');
 
         $query = Fee::query()
-            ->with(['student.schoolClass', 'student.studentSection'])
+            ->with(['student.schoolClass', 'student.studentSection', 'school'])
             ->orderByDesc('year')
             ->orderByDesc('month')
             ->orderBy('student_id');
@@ -44,15 +47,21 @@ class FeeController extends Controller
             ->paginate(25)
             ->withQueryString();
 
+        $user = Auth::user();
+        $isAdmin = $user && $user->isAdmin();
+
         $classes = SchoolClass::query()
+            ->when(!$isAdmin && $user->school_id, fn ($q) => $q->where('school_id', $user->school_id))
             ->orderBy('name')
             ->get();
 
         $sections = Section::query()
+            ->when(!$isAdmin && $user->school_id, fn ($q) => $q->where('school_id', $user->school_id))
             ->orderBy('name')
             ->get();
 
         $years = Fee::query()
+            ->when(!$isAdmin && $user->school_id, fn ($q) => $q->where('school_id', $user->school_id))
             ->select('year')
             ->distinct()
             ->orderByDesc('year')
@@ -75,9 +84,12 @@ class FeeController extends Controller
      */
     public function index(Request $request)
     {
+        $this->checkPermission('fees');
+
         $query = Fee::with([
             'student.schoolClass',
             'student.studentSection',
+            'school',
         ])
         ->orderByDesc('year')
         ->orderByDesc('month')
@@ -179,7 +191,11 @@ class FeeController extends Controller
         |--------------------------------------------------------------------------
         */
 
+        $user = Auth::user();
+        $isAdmin = $user && $user->isAdmin();
+
         $classes = SchoolClass::query()
+            ->when(!$isAdmin && $user->school_id, fn ($q) => $q->where('school_id', $user->school_id))
             ->orderBy('name')
             ->get();
 
@@ -191,6 +207,7 @@ class FeeController extends Controller
         */
 
         $sections = Section::query()
+            ->when(!$isAdmin && $user->school_id, fn ($q) => $q->where('school_id', $user->school_id))
             ->orderBy('name')
             ->get();
 
@@ -202,6 +219,7 @@ class FeeController extends Controller
         */
 
         $years = Fee::query()
+            ->when(!$isAdmin && $user->school_id, fn ($q) => $q->where('school_id', $user->school_id))
             ->select('year')
             ->distinct()
             ->orderByDesc('year')
@@ -223,12 +241,13 @@ class FeeController extends Controller
         ));
     }
 
-
     /**
      * Take / manage monthly fees.
      */
     public function create(Request $request)
     {
+        $this->checkPermission('fees');
+
         $month = (int) $request->input(
             'month',
             now()->month
@@ -255,7 +274,11 @@ class FeeController extends Controller
         |--------------------------------------------------------------------------
         */
 
+        $user = Auth::user();
+        $isAdmin = $user && $user->isAdmin();
+
         $classes = SchoolClass::query()
+            ->when(!$isAdmin && $user->school_id, fn ($q) => $q->where('school_id', $user->school_id))
             ->orderBy('name')
             ->get();
 
@@ -266,7 +289,10 @@ class FeeController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $sections = Section::query()->orderBy('name')->get();
+        $sections = Section::query()
+            ->when(!$isAdmin && $user->school_id, fn ($q) => $q->where('school_id', $user->school_id))
+            ->orderBy('name')
+            ->get();
 
 
         /*
@@ -392,6 +418,8 @@ class FeeController extends Controller
      */
     public function store(Request $request)
     {
+        $this->checkPermission('fees');
+
         $validated = $request->validate([
             'month' => [
                 'required',
@@ -476,6 +504,12 @@ class FeeController extends Controller
                     (int) $student->section !==
                     (int) $validated['section']
                 ) {
+                    continue;
+                }
+
+                // Check school access
+                $user = Auth::user();
+                if (!$user->canAccessSchool($student->school_id)) {
                     continue;
                 }
 
@@ -571,5 +605,14 @@ class FeeController extends Controller
                 'success',
                 'Fees saved successfully.'
             );
+    }
+
+    private function checkPermission(string $feature): void
+    {
+        $user = Auth::user();
+
+        if (!$user->hasSchoolPermission($feature)) {
+            abort(403, "Access denied. Feature '{$feature}' is not enabled for your school.");
+        }
     }
 }

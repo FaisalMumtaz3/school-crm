@@ -13,7 +13,7 @@
         <p class="mt-1 text-sm text-gray-500">
             {{ $teachers->total() }}
             {{ Str::plural('record', $teachers->total()) }}
-            in your directory
+            {{ $isAdmin ? 'across all schools' : 'in your directory' }}
         </p>
     </div>
 
@@ -193,6 +193,10 @@
             <table class="min-w-full divide-y divide-gray-100">
                 <thead class="sticky top-0 z-20 bg-gray-50">
                     <tr>
+                        @if ($isAdmin)
+                        <th class="px-6 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
+                            School</th>
+                        @endif
                         <th class="px-6 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
                             Teacher</th>
                         <th class="px-6 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
@@ -213,6 +217,11 @@
                 <tbody class="divide-y divide-gray-100 bg-white">
                     @foreach ($teachers as $teacher)
                         <tr class="transition hover:bg-indigo-50/30">
+                            @if ($isAdmin)
+                            <td class="whitespace-nowrap px-6 py-4">
+                                <span class="badge badge-success">{{ $teacher->school->name ?? 'N/A' }}</span>
+                            </td>
+                            @endif
                             <td class="whitespace-nowrap px-6 py-4">
                                 <div class="flex items-center gap-3"><span
                                         class="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-100 text-sm font-bold text-indigo-700">{{ strtoupper(substr($teacher->name, 0, 1)) }}</span>

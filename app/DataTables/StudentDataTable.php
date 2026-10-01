@@ -6,6 +6,7 @@ use App\Models\Student;
 use App\Models\SchoolClass;
 use App\Models\Section;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class StudentDataTable
 {
@@ -26,6 +27,7 @@ class StudentDataTable
             ->with([
                 'schoolClass',
                 'studentSection',
+                'school',
             ]);
 
         /*
@@ -66,6 +68,9 @@ class StudentDataTable
                 $query->where('section', $section)
         );
 
+        $user = Auth::user();
+        $isAdmin = $user && $user->isAdmin();
+
         return [
 
             /*
@@ -80,6 +85,7 @@ class StudentDataTable
              * Classes dropdown
              */
             'classes' => SchoolClass::query()
+                ->when(!$isAdmin && $user->school_id, fn ($q) => $q->where('school_id', $user->school_id))
                 ->orderBy('name')
                 ->get(),
 
@@ -87,6 +93,7 @@ class StudentDataTable
              * Sections dropdown
              */
             'sections' => Section::query()
+                ->when(!$isAdmin && $user->school_id, fn ($q) => $q->where('school_id', $user->school_id))
                 ->orderBy('name')
                 ->get(),
 
@@ -96,9 +103,14 @@ class StudentDataTable
             'filters' => $filters,
 
             /*
+             * Is Admin
+             */
+            'isAdmin' => $isAdmin,
+
+            /*
              * Table columns
              */
-            'columns' => $this->columns(),
+            'columns' => $this->columns($isAdmin),
         ];
     }
 
@@ -106,9 +118,9 @@ class StudentDataTable
      * Single source of truth for fields displayed
      * in the student table.
      */
-    public function columns(): array
+    public function columns(bool $isAdmin = false): array
     {
-        return [
+        $columns = [
             [
                 'key' => 'name',
                 'label' => 'Student',
@@ -129,5 +141,14 @@ class StudentDataTable
                 'label' => 'Section',
             ],
         ];
+
+        if ($isAdmin) {
+            array_unshift($columns, [
+                'key' => 'school.name',
+                'label' => 'School',
+            ]);
+        }
+
+        return $columns;
     }
 }

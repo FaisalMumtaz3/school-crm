@@ -261,6 +261,7 @@
 
             <p class="mt-1 text-sm text-gray-500">
                 {{ $attendances->total() }} attendance records
+                {{ auth()->user()->isAdmin() ? 'across all schools' : '' }}
             </p>
         </div>
 
@@ -275,6 +276,12 @@
             <thead>
 
                 <tr>
+
+                    @if (auth()->user()->isAdmin())
+                    <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
+                        School
+                    </th>
+                    @endif
 
                     <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
                         Date
@@ -314,6 +321,12 @@
                 @forelse($attendances as $attendance)
 
                     <tr class="transition hover:bg-gray-50">
+
+                        @if (auth()->user()->isAdmin())
+                        <td class="whitespace-nowrap px-5 py-4 text-sm text-gray-600">
+                            <span class="badge badge-success">{{ $attendance->school->name ?? 'N/A' }}</span>
+                        </td>
+                        @endif
 
                         <td class="whitespace-nowrap px-5 py-4 text-sm text-gray-600">
                             {{ $attendance->date->format('d M Y') }}

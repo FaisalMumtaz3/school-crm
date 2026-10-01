@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\SchoolClass;
 use App\Models\Section;
+use Illuminate\Support\Facades\Auth;
 
 class StudentController extends Controller
 {
@@ -15,7 +16,6 @@ class StudentController extends Controller
     {
         $tableData = $table->viewData();
 
-        // AJAX requests replace only the table, keeping the page shell in place.
         if (request()->ajax()) {
             return view('students.partials.StudentDataTable', $tableData);
         }
@@ -25,8 +25,18 @@ class StudentController extends Controller
 
     public function create()
     {
-        $classes = \App\Models\SchoolClass::orderBy('name')->get();
-        $sections = Section::orderBy('name')->get();
+        $user = Auth::user();
+        $isAdmin = $user && $user->isAdmin();
+
+        $classes = SchoolClass::query()
+            ->when(!$isAdmin && $user->school_id, fn ($q) => $q->where('school_id', $user->school_id))
+            ->orderBy('name')
+            ->get();
+
+        $sections = Section::query()
+            ->when(!$isAdmin && $user->school_id, fn ($q) => $q->where('school_id', $user->school_id))
+            ->orderBy('name')
+            ->get();
 
         return view('students.create', compact('classes', 'sections'));
     }
@@ -45,6 +55,9 @@ class StudentController extends Controller
             'admission_date' => 'nullable|date'
         ]);
 
+        $user = Auth::user();
+        $validated['school_id'] = $user->isAdmin() ? $request->input('school_id') : $user->school_id;
+
         Student::create($validated);
 
         return redirect()->route('students.index')
@@ -53,18 +66,34 @@ class StudentController extends Controller
 
     public function show(Student $student)
     {
+        $this->authorizeSchoolAccess($student->school_id);
+
         return view('students.show', compact('student'));
     }
 
     public function edit(Student $student)
     {
-        $classes = SchoolClass::orderBy('name')->get(); 
-        $sections = Section::orderBy('name')->get();
-        return view('students.edit', compact( 'student', 'classes', 'sections' ));
+        $this->authorizeSchoolAccess($student->school_id);
+
+        $user = Auth::user();
+        $isAdmin = $user && $user->isAdmin();
+
+        $classes = SchoolClass::query()
+            ->when(!$isAdmin && $user->school_id, fn ($q) => $q->where('school_id', $user->school_id))
+            ->orderBy('name')
+            ->get();
+
+        $sections = Section::query()
+            ->when(!$isAdmin && $user->school_id, fn ($q) => $q->where('school_id', $user->school_id))
+            ->orderBy('name')
+            ->get();
+
+        return view('students.edit', compact('student', 'classes', 'sections'));
     }
 
     public function update(Request $request, Student $student)
     {
+        $this->authorizeSchoolAccess($student->school_id);
         $this->normalizePhone($request);
 
         $validated = $request->validate([
@@ -85,10 +114,21 @@ class StudentController extends Controller
 
     public function destroy(Student $student)
     {
+        $this->authorizeSchoolAccess($student->school_id);
+
         $student->delete();
 
         return redirect()->route('students.index')
             ->with('success','Student deleted successfully');
+    }
+
+    private function authorizeSchoolAccess(?int $schoolId): void
+    {
+        $user = Auth::user();
+
+        if (!$user->canAccessSchool($schoolId)) {
+            abort(403, 'Unauthorized access to this school\'s data.');
+        }
     }
 
     private function normalizePhone(Request $request): void

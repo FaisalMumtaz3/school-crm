@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\DataTables\SectionDataTable;
 use App\Models\Section;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class SectionController extends Controller
 {
@@ -36,12 +37,17 @@ class SectionController extends Controller
             'name' => 'required|string|max:255',
         ]);
 
-        $exists = Section::where('name', $validated['name'])->exists();
+        $user = Auth::user();
+        $validated['school_id'] = $user->isAdmin() ? $request->input('school_id') : $user->school_id;
+
+        $exists = Section::where('name', $validated['name'])
+            ->where('school_id', $validated['school_id'])
+            ->exists();
 
         if ($exists) {
             return back()
                 ->withErrors([
-                    'name' => 'This section already exists in the selected class.',
+                    'name' => 'This section already exists in the selected school.',
                 ])
                 ->withInput();
         }
@@ -55,6 +61,8 @@ class SectionController extends Controller
 
     public function show(Section $section)
     {
+        $this->authorizeSchoolAccess($section->school_id);
+
         return view(
             'sections.show',
             compact('section')
@@ -63,6 +71,8 @@ class SectionController extends Controller
 
     public function edit(Section $section)
     {
+        $this->authorizeSchoolAccess($section->school_id);
+
         return view(
             'sections.edit',
             compact('section')
@@ -71,19 +81,21 @@ class SectionController extends Controller
 
     public function update(Request $request, Section $section)
     {
+        $this->authorizeSchoolAccess($section->school_id);
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
         ]);
 
         $exists = Section::where('name', $validated['name'])
-            ->where('id', '!=', $section->id)
+            ->where('school_id', $section->school_id)
             ->where('id', '!=', $section->id)
             ->exists();
 
         if ($exists) {
             return back()
                 ->withErrors([
-                    'name' => 'This section already exists in the selected class.',
+                    'name' => 'This section already exists in the selected school.',
                 ])
                 ->withInput();
         }
@@ -97,10 +109,21 @@ class SectionController extends Controller
 
     public function destroy(Section $section)
     {
+        $this->authorizeSchoolAccess($section->school_id);
+
         $section->delete();
 
         return redirect()
             ->route('sections.index')
             ->with('success', 'Section deleted successfully');
+    }
+
+    private function authorizeSchoolAccess(?int $schoolId): void
+    {
+        $user = Auth::user();
+
+        if (!$user->canAccessSchool($schoolId)) {
+            abort(403, 'Unauthorized access to this school\'s data.');
+        }
     }
 }

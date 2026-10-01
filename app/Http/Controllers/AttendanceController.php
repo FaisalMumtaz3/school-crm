@@ -8,6 +8,7 @@ use App\Models\SchoolClass;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class AttendanceController extends Controller
 {
@@ -16,9 +17,12 @@ class AttendanceController extends Controller
      */
     public function index(Request $request)
     {
+        $this->checkPermission('attendance');
+
         $query = Attendance::with([
             'student.schoolClass',
             'student.studentSection',
+            'school',
         ])
             ->orderByDesc('date')
             ->orderBy('id');
@@ -55,11 +59,16 @@ class AttendanceController extends Controller
 
         $attendances = $query->paginate(20)->withQueryString();
 
+        $user = Auth::user();
+        $isAdmin = $user && $user->isAdmin();
+
         $classes = SchoolClass::query()
+            ->when(!$isAdmin && $user->school_id, fn ($q) => $q->where('school_id', $user->school_id))
             ->orderBy('name')
             ->get();
 
         $sections = Section::query()
+            ->when(!$isAdmin && $user->school_id, fn ($q) => $q->where('school_id', $user->school_id))
             ->orderBy('name')
             ->get();
 
@@ -76,6 +85,8 @@ class AttendanceController extends Controller
      */
     public function create(Request $request)
     {
+        $this->checkPermission('attendance');
+
         $date = $request->input('date', now()->format('Y-m-d'));
 
         $selectedClass = $request->input('class');
@@ -87,12 +98,13 @@ class AttendanceController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $classes = Student::query()
-            ->whereNotNull('class')
-            ->where('class', '!=', '')
-            ->distinct()
-            ->orderBy('class')
-            ->pluck('class');
+        $user = Auth::user();
+        $isAdmin = $user && $user->isAdmin();
+
+        $classes = SchoolClass::query()
+            ->when(!$isAdmin && $user->school_id, fn ($q) => $q->where('school_id', $user->school_id))
+            ->orderBy('name')
+            ->pluck('name', 'id');
 
 
         /*
@@ -106,7 +118,10 @@ class AttendanceController extends Controller
         |
         */
 
-        $sections = Section::query()->orderBy('name')->get();
+        $sections = Section::query()
+            ->when(!$isAdmin && $user->school_id, fn ($q) => $q->where('school_id', $user->school_id))
+            ->orderBy('name')
+            ->get();
 
 
         /*
@@ -187,6 +202,8 @@ class AttendanceController extends Controller
      */
     public function store(Request $request)
     {
+        $this->checkPermission('attendance');
+
         $validated = $request->validate([
             'date' => [
                 'required',
@@ -245,6 +262,12 @@ class AttendanceController extends Controller
                     continue;
                 }
 
+                // Check school access
+                $user = Auth::user();
+                if (!$user->canAccessSchool($student->school_id)) {
+                    continue;
+                }
+
                 Attendance::updateOrCreate(
                     [
                         'student_id' => $student->id,
@@ -269,6 +292,8 @@ class AttendanceController extends Controller
      */
     public function show(Request $request)
     {
+        $this->checkPermission('attendance');
+
         $request->validate([
             'date' => 'required|date',
             'class' => 'required|string',
@@ -296,5 +321,14 @@ class AttendanceController extends Controller
             'students',
             'attendance'
         ));
+    }
+
+    private function checkPermission(string $feature): void
+    {
+        $user = Auth::user();
+
+        if (!$user->hasSchoolPermission($feature)) {
+            abort(403, "Access denied. Feature '{$feature}' is not enabled for your school.");
+        }
     }
 }

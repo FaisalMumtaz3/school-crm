@@ -7,6 +7,7 @@ use App\Models\Teacher;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Auth;
 
 class TeacherController extends Controller
 {
@@ -30,23 +31,32 @@ class TeacherController extends Controller
     {
         $this->normalizePhone($request);
 
-        Teacher::create($request->validate($this->rules()));
+        $validated = $request->validate($this->rules());
+        $user = Auth::user();
+        $validated['school_id'] = $user->isAdmin() ? $request->input('school_id') : $user->school_id;
+
+        Teacher::create($validated);
 
         return redirect()->route('teachers.index')->with('success', 'Teacher created successfully');
     }
 
     public function show(Teacher $teacher): View
     {
+        $this->authorizeSchoolAccess($teacher->school_id);
+
         return view('teachers.show', compact('teacher'));
     }
 
     public function edit(Teacher $teacher): View
     {
+        $this->authorizeSchoolAccess($teacher->school_id);
+
         return view('teachers.edit', compact('teacher'));
     }
 
     public function update(Request $request, Teacher $teacher): RedirectResponse
     {
+        $this->authorizeSchoolAccess($teacher->school_id);
         $this->normalizePhone($request);
 
         $teacher->update($request->validate($this->rules()));
@@ -56,6 +66,8 @@ class TeacherController extends Controller
 
     public function destroy(Teacher $teacher): RedirectResponse
     {
+        $this->authorizeSchoolAccess($teacher->school_id);
+
         $teacher->delete();
 
         return redirect()->route('teachers.index')->with('success', 'Teacher deleted successfully');
@@ -74,6 +86,15 @@ class TeacherController extends Controller
             'contract_start_date' => 'nullable|date',
             'contract_end_date' => 'nullable|date|after_or_equal:contract_start_date',
         ];
+    }
+
+    private function authorizeSchoolAccess(?int $schoolId): void
+    {
+        $user = Auth::user();
+
+        if (!$user->canAccessSchool($schoolId)) {
+            abort(403, 'Unauthorized access to this school\'s data.');
+        }
     }
 
     private function normalizePhone(Request $request): void

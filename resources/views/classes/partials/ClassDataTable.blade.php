@@ -17,7 +17,7 @@
         <p class="mt-1 text-sm text-gray-500">
             {{ $classes->total() }}
             {{ Str::plural('record', $classes->total()) }}
-            in your directory
+            {{ $isAdmin ? 'across all schools' : 'in your directory' }}
         </p>
     </div>
 
@@ -188,6 +188,10 @@
                                         </div>
 
                                     </div>
+
+                                @elseif ($column['key'] === 'school.name')
+
+                                    <span class="badge badge-success">{{ $value ?: 'Not assigned' }}</span>
 
                                 @else
 

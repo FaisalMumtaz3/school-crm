@@ -3,64 +3,36 @@
 namespace App\DataTables;
 
 use App\Models\Section;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class SectionDataTable
 {
-    public function viewData()
+    public function __construct(private readonly Request $request)
     {
-        /*
-         * Filters
-         */
-        $filters = [
-            'search' => request('search'),
-        ];
+    }
 
+    public function viewData(): array
+    {
+        $filters = $this->request->validate([
+            'search' => 'nullable|string|max:100',
+        ]);
 
-        /*
-         * Query
-         */
-        $query = Section::query();
+        $query = Section::query()->with('school');
 
+        $query->when($filters['search'] ?? null, function ($q) use ($filters) {
+            $q->where('name', 'like', '%' . $filters['search'] . '%');
+        });
 
-        /*
-         * Search Section
-         */
-        if (!empty($filters['search'])) {
+        $user = Auth::user();
+        $isAdmin = $user && $user->isAdmin();
 
-            $search = $filters['search'];
-
-            $query->where(function ($q) use ($search) {
-
-                $q->where(
-                    'name',
-                    'like',
-                    '%' . $search . '%'
-                );
-
-            });
-        }
-
-
-        /*
-         * IMPORTANT:
-         * paginate() is required because
-         * SectionDataTable.blade.php uses:
-         *
-         * $sections->total()
-         * $sections->hasPages()
-         * $sections->links()
-         */
         $sections = $query
             ->latest()
             ->paginate(10)
             ->withQueryString();
 
-
-        /*
-         * Columns
-         */
         $columns = [
-
             [
                 'key' => 'name',
                 'label' => 'Section',
@@ -73,14 +45,18 @@ class SectionDataTable
 
         ];
 
+        if ($isAdmin) {
+            array_unshift($columns, [
+                'key' => 'school.name',
+                'label' => 'School',
+            ]);
+        }
 
-        /*
-         * Send everything to Blade
-         */
         return [
             'sections' => $sections,
             'filters' => $filters,
             'columns' => $columns,
+            'isAdmin' => $isAdmin,
         ];
     }
 }

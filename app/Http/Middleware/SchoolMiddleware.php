@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class AdminMiddleware
+class SchoolMiddleware
 {
     /**
      * Handle an incoming request.
@@ -18,12 +18,26 @@ class AdminMiddleware
     {
         $user = Auth::user();
 
-        if (!$user || !$user->isAdmin()) {
-            abort(403, 'Unauthorized. Admin access required.');
+        if (!$user) {
+            abort(401, 'Unauthenticated.');
+        }
+
+        if ($user->isAdmin()) {
+            return $next($request);
+        }
+
+        if (!$user->school_id) {
+            abort(403, 'No school assigned to your account.');
         }
 
         if (!$user->is_active) {
             abort(403, 'Your account has been deactivated.');
+        }
+
+        $school = $user->school;
+
+        if (!$school || !$school->isActive()) {
+            abort(403, 'Your school account is inactive.');
         }
 
         return $next($request);

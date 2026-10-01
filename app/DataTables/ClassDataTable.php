@@ -4,6 +4,7 @@ namespace App\DataTables;
 
 use App\Models\SchoolClass;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ClassDataTable
 {
@@ -17,24 +18,34 @@ class ClassDataTable
             'search' => 'nullable|string|max:100',
         ]);
 
-        $classesQuery = SchoolClass::query();
+        $classesQuery = SchoolClass::query()->with('school');
 
         $classesQuery->when($filters['search'] ?? null, function ($query, $search) {
             $query->where('name', 'like', "%{$search}%");
         });
 
+        $user = Auth::user();
+        $isAdmin = $user && $user->isAdmin();
+
         return [
             'classes' => $classesQuery->latest()->paginate(10)->withQueryString(),
             'filters' => $filters,
-            'columns' => $this->columns(),
+            'isAdmin' => $isAdmin,
+            'columns' => $this->columns($isAdmin),
         ];
     }
 
     // This is the single source of truth for fields displayed in the class table.
-    public function columns(): array
+    public function columns(bool $isAdmin = false): array
     {
-        return [
+        $columns = [
             ['key' => 'name', 'label' => 'Class'],
         ];
+
+        if ($isAdmin) {
+            array_unshift($columns, ['key' => 'school.name', 'label' => 'School']);
+        }
+
+        return $columns;
     }
 }

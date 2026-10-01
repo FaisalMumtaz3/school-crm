@@ -4,6 +4,7 @@ namespace App\DataTables;
 
 use App\Models\Teacher;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TeacherDataTable
 {
@@ -17,7 +18,7 @@ class TeacherDataTable
             'qualification' => 'nullable|string|max:255',
         ]);
 
-        $teachersQuery = Teacher::query();
+        $teachersQuery = Teacher::query()->with('school');
 
         $teachersQuery->when($filters['search'] ?? null, function ($query, $search) {
             $query->where(function ($teacherQuery) use ($search) {
@@ -32,11 +33,25 @@ class TeacherDataTable
         $teachersQuery->when($filters['subject'] ?? null, fn ($query, $subject) => $query->where('subject', $subject));
         $teachersQuery->when($filters['qualification'] ?? null, fn ($query, $qualification) => $query->where('qualification', $qualification));
 
+        $user = Auth::user();
+        $isAdmin = $user && $user->isAdmin();
+
         return [
             'teachers' => $teachersQuery->latest()->paginate(10)->withQueryString(),
-            'subjects' => Teacher::query()->whereNotNull('subject')->distinct()->orderBy('subject')->pluck('subject'),
-            'qualifications' => Teacher::query()->whereNotNull('qualification')->distinct()->orderBy('qualification')->pluck('qualification'),
+            'subjects' => Teacher::query()
+                ->when(!$isAdmin && $user->school_id, fn ($q) => $q->where('school_id', $user->school_id))
+                ->whereNotNull('subject')
+                ->distinct()
+                ->orderBy('subject')
+                ->pluck('subject'),
+            'qualifications' => Teacher::query()
+                ->when(!$isAdmin && $user->school_id, fn ($q) => $q->where('school_id', $user->school_id))
+                ->whereNotNull('qualification')
+                ->distinct()
+                ->orderBy('qualification')
+                ->pluck('qualification'),
             'filters' => $filters,
+            'isAdmin' => $isAdmin,
         ];
     }
 }

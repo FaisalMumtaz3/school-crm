@@ -4,12 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Traits\SchoolScope;
 
 class Teacher extends Model
 {
-    use HasFactory;
+    use HasFactory, SchoolScope;
 
     protected $fillable = [
+        'school_id',
         'name',
         'father_name',
         'phone',
@@ -29,5 +32,10 @@ class Teacher extends Model
             'contract_start_date' => 'date',
             'contract_end_date' => 'date',
         ];
+    }
+
+    public function school(): BelongsTo
+    {
+        return $this->belongsTo(School::class);
     }
 }

@@ -1069,6 +1069,7 @@
             </div>
 
 
+            @if (auth()->user()->hasSchoolPermission('students') || auth()->user()->isAdmin())
             <div class="nav-section">
 
                 <div class="nav-section-title">
@@ -1087,6 +1088,7 @@
                     <span>Students</span>
                 </a>
 
+                @if (auth()->user()->hasSchoolPermission('teachers') || auth()->user()->isAdmin())
                 <a href="{{ route('teachers.index') }}" class="nav-item {{ request()->routeIs('teachers.*') ? 'active' : '' }}">
                     <span class="nav-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1098,16 +1100,20 @@
                     </span>
                     <span>Teachers</span>
                 </a>
+                @endif
 
             </div>
+            @endif
 
 
+            @if (auth()->user()->hasSchoolPermission('classes') || auth()->user()->hasSchoolPermission('sections') || auth()->user()->hasSchoolPermission('attendance') || auth()->user()->isAdmin())
             <div class="nav-section">
 
                 <div class="nav-section-title">
                     Academics
                 </div>
 
+                @if (auth()->user()->hasSchoolPermission('classes') || auth()->user()->isAdmin())
                 <a href="{{ route('classes.index') }}" class="nav-item {{ request()->routeIs('classes.*') ? 'active' : '' }}">
                     <span class="nav-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1118,7 +1124,9 @@
                     </span>
                     <span>Classes</span>
                 </a>
+                @endif
 
+                @if (auth()->user()->hasSchoolPermission('sections') || auth()->user()->isAdmin())
                 <a href="{{ route('sections.index') }}" class="nav-item {{ request()->routeIs('sections.*') ? 'active' : '' }}">
                     <span class="nav-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1130,7 +1138,9 @@
                     </span>
                     <span>Sections</span>
                 </a>
+                @endif
 
+                @if (auth()->user()->hasSchoolPermission('attendance') || auth()->user()->isAdmin())
                 <a href="{{ route('attendances.index') }}" class="nav-item {{ request()->routeIs('attendances.*') ? 'active' : '' }}">
                     <span class="nav-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1143,10 +1153,13 @@
                     </span>
                     <span>Attendance</span>
                 </a>
+                @endif
 
             </div>
+            @endif
 
 
+            @if (auth()->user()->hasSchoolPermission('fees') || auth()->user()->isAdmin())
             <div class="nav-section">
 
                 <div class="nav-section-title">
@@ -1164,8 +1177,10 @@
                 </a>
 
             </div>
+            @endif
 
 
+            @if (auth()->user()->hasSchoolPermission('reports') || auth()->user()->isAdmin())
             <div class="nav-section">
 
                 <div class="nav-section-title">
@@ -1186,6 +1201,26 @@
                 </a>
 
             </div>
+            @endif
+
+            @if (auth()->user()->isAdmin())
+            <div class="nav-section">
+
+                <div class="nav-section-title">
+                    Administration
+                </div>
+
+                <a href="{{ route('admin.schools.index') }}" class="nav-item {{ request()->routeIs('admin.schools*') ? 'active' : '' }}">
+                    <span class="nav-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                        </svg>
+                    </span>
+                    <span>Schools</span>
+                </a>
+
+            </div>
+            @endif
 
         </nav>
 
